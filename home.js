@@ -1,6 +1,64 @@
 // Keycode for the 'Enter' key
 const KEY_ENTER = 13; 
 
+// Gap between grid lines
+const gridGap = 50;
+
+// True = enable gridlines
+var isDebugging = true;
+
+// Draw grid lines and ruler markings across the canvas element.
+// For debugging only
+function drawGridLines(ctx, sizeX, sizeY) {
+  // Print the X axis scales and gridlines
+  for (var i = 0; i < sizeX; i += 10) {
+    ctx.strokeStyle = 'rgb(0, 0, 0)';
+    var isMajorInterval = i % gridGap == 0;
+    var lineSize = (isMajorInterval) ? 10 : 5;
+
+    // Scale lines
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, lineSize);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Gridlines
+    if (isMajorInterval) {
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, sizeY);
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+
+  // Print the Y axis scales and gridlines
+  for (var j = 0; j < sizeY; j += 10) {
+    ctx.strokeStyle = 'rgb(0, 0, 0)';
+    var isMajorInterval = j % gridGap == 0;
+    var lineSize = (isMajorInterval) ? 10 : 5;
+
+    // Scale lines
+    ctx.beginPath();
+    ctx.moveTo(0, j);
+    ctx.lineTo(lineSize, j);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Gridlines
+    if (isMajorInterval) {
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.beginPath();
+      ctx.moveTo(0, j);
+      ctx.lineTo(sizeX, j);
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+}
+
 // Initialise the experimental canvas element
 function initExperiment() {
   // Add an event listener to the canvas element to detect mouse clicks
@@ -80,6 +138,10 @@ function drawExperiment() {
     ctx.arc(300, 300, 150, (Math.PI/180)*0, (Math.PI/180)*360, false);
     ctx.fillStyle = 'rgb(100, 0, 0)';
     ctx.fill();
+
+    if (isDebugging) {
+      drawGridLines(ctx, sizeX, sizeY);
+    }
     
     // Draw a 'wood colour' background
     ctx.fillStyle = '#DDB06D';
