@@ -104,42 +104,6 @@ function drawExperiment() {
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
     
-    // Draw a line
-    ctx.strokeStyle = 'rgb(0, 0, 0)';
-    ctx.moveTo(0, 0);
-    ctx.lineTo(200, 100);
-    ctx.stroke();
-    
-    // Draw some rectangles
-    ctx.fillStyle = 'rgb(200, 0, 0)';
-    ctx.fillRect(10, 10, 50, 50);
-    
-    ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
-    ctx.fillRect(30, 30, 50, 50);
-    
-    // Rotate this rectangle!
-    ctx.save(); // Save the state of the current canvas
-    ctx.translate(500, 500); // Move the rectangle to the given coordinate
-    // ctx.rotate( // Rotate the element
-    //   ((2 * Math.PI) / rotatePeriod) * time.getSeconds() + 
-    //   ((2 * Math.PI) / (rotatePeriod*1000)) * time.getMilliseconds());
-    ctx.translate(-50/2, -50/2); // Move the rectangle so it rotates in its centre
-    ctx.strokeStyle = 'rgb(0, 200, 0)';
-    ctx.strokeRect(0, 0, 50, 50); // Render the rectangle
-    ctx.restore(); // Restore the current canvas state (so that the other elements don't rotate) 
-    
-    // Clear a 50x50 size space
-    ctx.clearRect(60, 60, 50, 50);
-    
-    // Add some text
-    ctx.strokeStyle = 'rgb(0, 0, 0)';
-    ctx.fillStyle = 'rgb(0, 0, 0)';
-    ctx.font = '18px serif';
-    ctx.fillText('Canvas is awesome', 310, 50);
-    ctx.fillText('They the best', 310, 70);
-    ctx.font = '30px sans-serif';
-    ctx.strokeText('Outlier', 310, 120);
-
     // Sample text    
     var sampleText = "polandcannotintospace";
     var encodedText = sampleText.split("").map(letter => letterToNum(letter) + 1)
@@ -166,9 +130,9 @@ function drawExperiment() {
         // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
         // To make adjacent arcs merge with each other more seamlessly,
         // an additional 0.2 degrees is added for the other side of the arc.
-        ctx.arc(300, 300, 70+15, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
+        ctx.arc(300, 300, 120+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
         // Draw the other arc counterclockwise
-        ctx.arc(300, 300, 70, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
+        ctx.arc(300, 300, 120, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
         //ctx.lineTo(550, 500);
         ctx.fillStyle = 'rgb(255, 230, 0)';
         ctx.fill();
@@ -184,9 +148,9 @@ function drawExperiment() {
         // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
         // To make adjacent arcs merge with each other more seamlessly,
         // an additional 0.2 degrees is added for the other side of the arc.
-        ctx.arc(300, 300, 85+15, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
+        ctx.arc(300, 300, 180+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
         // Draw the other arc counterclockwise
-        ctx.arc(300, 300, 85, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
+        ctx.arc(300, 300, 180, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
         //ctx.lineTo(550, 500);
         ctx.fillStyle = 'rgb(255, 230, 0)';
         ctx.fill();
@@ -195,7 +159,7 @@ function drawExperiment() {
     
     // Circle base
     ctx.beginPath();
-    ctx.arc(300, 300, 150, (Math.PI/180)*0, (Math.PI/180)*360, false);
+    ctx.arc(300, 300, 300, (Math.PI/180)*0, (Math.PI/180)*360, false);
     ctx.fillStyle = 'rgb(100, 0, 0)';
     ctx.fill();
 
