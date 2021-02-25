@@ -16,8 +16,8 @@ var numOfArcs = 80;
 // Size of the arc in degrees
 var arcSize = 360 / numOfArcs;
 
-// Amount of overlap between arcs in degrees
-var overlapDegrees = 0.4;
+// Amount of overlap between arcs in degrees (to make adjacent arcs merge with each other more seamlessly)
+var overlapDegrees = 0.3;
 
 // Draw grid lines and ruler markings across the canvas element.
 // For debugging only
@@ -92,8 +92,6 @@ function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, an
   ctx.beginPath();
   // Draw an arc clockwise.
   // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
-  // To make adjacent arcs merge with each other more seamlessly,
-  // an additional 0.2 degrees is added for the other side of the arc.
   ctx.arc(centreX, centreY, outerRadius, angleStart, angleEnd, false);
   // Draw the other arc counterclockwise
   ctx.arc(centreX, centreY, innerRadius, angleEnd, angleStart, true);
@@ -146,13 +144,13 @@ function drawExperiment() {
     for (var i = 0; i < numOfArcs; i += 1) {
       // If char is 1, draw an arc
       if (binaryMsg[i] == 1) {
-        drawArc(ctx, 300, 300, 120, 120+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
+        drawArc(ctx, 300, 300, 120, 120+60.7, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
       }
     }
     for (var i = 0; i < numOfArcs; i += 1) {
       // If char is 1, draw an arc
       if (binaryMsg2[i] == 1) {
-        drawArc(ctx, 300, 300, 180, 180+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
+        drawArc(ctx, 300, 300, 180, 180+60.7, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
       }
     }
     
