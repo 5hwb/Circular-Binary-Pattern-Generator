@@ -7,6 +7,9 @@ const gridGap = 50;
 // True = enable gridlines
 var isDebugging = true;
 
+//
+var patternMessage = "";
+
 // Draw grid lines and ruler markings across the canvas element.
 // For debugging only
 function drawGridLines(ctx, sizeX, sizeY) {
@@ -95,7 +98,6 @@ function drawExperiment() {
   
   var sizeX = 600;
   var sizeY = 600;
-  const rotatePeriod = 3; // Num of seconds for 1 rotation of the green rectangle
   var time = new Date();
   
   if (c.getContext) {
@@ -104,9 +106,9 @@ function drawExperiment() {
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
     
-    // Sample text    
-    var sampleText = "polandcannotintospace";
-    var encodedText = sampleText.split("").map(letter => letterToNum(letter) + 1)
+    // Sample text
+    //var sampleText = "thatssad";
+    var encodedText = patternMessage.split("").map(letter => letterToNum(letter) + 1)
                                           .map(num => numToBin(num))
                                           .map(binStr => padBinaryString(binStr, 7));
     console.log(encodedText);
@@ -175,7 +177,24 @@ function drawExperiment() {
   }
 }
 
+// Get all input keypresses
+function receiveKeypress(e, context) {
+  console.log("=================");
+  if (e.key == "Enter") {
+    patternMessage = context.value.toLowerCase();
+    console.log(patternMessage);
+
+    initExperiment();
+  }
+}
+
 // Start the canvas rendering
 function init() {
+  var userMessageElement = document.getElementById("usermessage");
+  // Add event listeners to user message textarea
+  userMessageElement.addEventListener("keypress", function(event) {
+    receiveKeypress(event, this);
+  }, true);
+  
   initExperiment();
 }
