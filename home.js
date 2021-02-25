@@ -125,13 +125,26 @@ function drawExperiment() {
     ctx.strokeText('Outlier', 310, 120);
     
     // Arcs to represent the pattern
-    ctx.beginPath();
-    ctx.arc(300, 300, 75, (Math.PI/180)*0, (Math.PI/180)*170, false);
-    ctx.lineTo(100, 300);
-    //ctx.arc(300, 300, 60, (Math.PI/180)*0, (Math.PI/180)*180, false);
-    //ctx.lineTo(550, 500);
-    ctx.fillStyle = 'rgb(255, 230, 0)';
-    ctx.fill();
+    var numOfArcs = 10;
+    var arcSize = 360 / numOfArcs;
+    var overlapDegrees = 0.2;
+    var binaryMsg = "0100110011";
+    
+    for (var i = 0; i < numOfArcs; i += 1) {
+      // If char is 1, draw an arc
+      if (i % 2 == 0) {
+        ctx.beginPath();
+        // Draw an arc clockwise.
+        // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
+        // To make adjacent arcs merge with each other more seamlessly, an additional 0.2 degrees is added for the other side of the arc.
+        ctx.arc(300, 300, 75, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
+        // Draw the other arc counterclockwise
+        ctx.arc(300, 300, 60, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
+        //ctx.lineTo(550, 500);
+        ctx.fillStyle = 'rgb(255, 230, 0)';
+        ctx.fill();
+      }
+    }
     
     // Circle base
     ctx.beginPath();
