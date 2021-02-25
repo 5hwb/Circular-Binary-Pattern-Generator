@@ -132,7 +132,7 @@ function drawExperiment() {
     
     for (var i = 0; i < numOfArcs; i += 1) {
       // If char is 1, draw an arc
-      if (i % 2 == 0) {
+      if (binaryMsg[i] == 1) {
         ctx.beginPath();
         // Draw an arc clockwise.
         // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
