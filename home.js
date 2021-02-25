@@ -155,7 +155,7 @@ function drawExperiment() {
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
     
-    var binaryMsg2 = encodedText.slice(0, 8).map(binStr => binStr + "0".repeat(3)).join("");
+    var binaryMsg2 = encodedText.slice(0, 8).map(binStr => binStr + "0".repeat(3));
     console.log(binaryMsg2);
 
     for (var i = 0; i < numOfArcs; i += 1) {
@@ -175,8 +175,10 @@ function drawExperiment() {
       }
     }
     for (var i = 0; i < numOfArcs; i += 1) {
+      // Get the correct binary string from the binary message array 
+      var currBinString = binaryMsg2[(i - (i % 10)) / 10];
       // If char is 1, draw an arc
-      if (binaryMsg2[i] == 1) {
+      if (currBinString[i % 10] == 1) {
         ctx.beginPath();
         // Draw an arc clockwise.
         // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
