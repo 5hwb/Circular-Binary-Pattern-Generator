@@ -7,8 +7,17 @@ const gridGap = 50;
 // True = enable gridlines
 var isDebugging = true;
 
-//
-var patternMessage = "";
+// The message to be encoded by the pattern
+var patternMessage = "mightyzz";
+
+// Number of arcs
+var numOfArcs = 80;
+
+// Size of the arc in degrees
+var arcSize = 360 / numOfArcs;
+
+// Amount of overlap between arcs in degrees
+var overlapDegrees = 0.4;
 
 // Draw grid lines and ruler markings across the canvas element.
 // For debugging only
@@ -105,25 +114,21 @@ function drawExperiment() {
     
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
-    
+
     // Sample text
-    //var sampleText = "thatssad";
     var encodedText = patternMessage.split("").map(letter => letterToNum(letter) + 1)
                                           .map(num => numToBin(num))
                                           .map(binStr => padBinaryString(binStr, 7));
     console.log(encodedText);
-    
-    // Arcs to represent the pattern
-    var numOfArcs = 80;
-    var arcSize = 360 / numOfArcs;
-    var overlapDegrees = 0.4;
-    //var binaryMsg = "1010101010";
+
+    // Sample binary messages
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
-    
+
     var binaryMsg2 = encodedText.slice(0, 8).map(binStr => binStr + "0".repeat(3)).join("");
     console.log(binaryMsg2);
-
+    
+    // Arcs to represent the pattern
     for (var i = 0; i < numOfArcs; i += 1) {
       // If char is 1, draw an arc
       if (binaryMsg[i] == 1) {
