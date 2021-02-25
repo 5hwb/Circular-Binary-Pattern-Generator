@@ -183,22 +183,20 @@ function drawExperiment() {
 }
 
 // Get all input keypresses
-function receiveKeypress(e, context) {
+function receiveKeyup(e, context) {
   console.log("=================");
-  if (e.key == "Enter") {
-    patternMessage = context.value.toLowerCase();
-    console.log(patternMessage);
+  patternMessage = context.value.toLowerCase();
+  console.log(patternMessage);
 
-    initExperiment();
-  }
+  initExperiment();
 }
 
 // Start the canvas rendering
 function init() {
   var userMessageElement = document.getElementById("usermessage");
   // Add event listeners to user message textarea
-  userMessageElement.addEventListener("keypress", function(event) {
-    receiveKeypress(event, this);
+  userMessageElement.addEventListener("keyup", function(event) {
+    receiveKeyup(event, this);
   }, true);
   
   initExperiment();
