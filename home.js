@@ -87,6 +87,20 @@ function padBinaryString(binStr, numDigits) {
   return "0".repeat(numDigits - binStr.length) + binStr;
 }
 
+// Render an arc
+function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, angleEnd) {
+  ctx.beginPath();
+  // Draw an arc clockwise.
+  // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
+  // To make adjacent arcs merge with each other more seamlessly,
+  // an additional 0.2 degrees is added for the other side of the arc.
+  ctx.arc(centreX, centreY, outerRadius, angleStart, angleEnd, false);
+  // Draw the other arc counterclockwise
+  ctx.arc(centreX, centreY, innerRadius, angleEnd, angleStart, true);
+  ctx.fillStyle = 'rgb(255, 230, 0)';
+  ctx.fill();
+}
+
 // Initialise the experimental canvas element
 function initExperiment() {
   // Add an event listener to the canvas element to detect mouse clicks
@@ -127,38 +141,18 @@ function drawExperiment() {
 
     var binaryMsg2 = encodedText.slice(0, 8).map(binStr => binStr + "0".repeat(3)).join("");
     console.log(binaryMsg2);
-    
+        
     // Arcs to represent the pattern
     for (var i = 0; i < numOfArcs; i += 1) {
       // If char is 1, draw an arc
       if (binaryMsg[i] == 1) {
-        ctx.beginPath();
-        // Draw an arc clockwise.
-        // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
-        // To make adjacent arcs merge with each other more seamlessly,
-        // an additional 0.2 degrees is added for the other side of the arc.
-        ctx.arc(300, 300, 120+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
-        // Draw the other arc counterclockwise
-        ctx.arc(300, 300, 120, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
-        //ctx.lineTo(550, 500);
-        ctx.fillStyle = 'rgb(255, 230, 0)';
-        ctx.fill();
+        drawArc(ctx, 300, 300, 120, 120+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
       }
     }
     for (var i = 0; i < numOfArcs; i += 1) {
       // If char is 1, draw an arc
       if (binaryMsg2[i] == 1) {
-        ctx.beginPath();
-        // Draw an arc clockwise.
-        // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
-        // To make adjacent arcs merge with each other more seamlessly,
-        // an additional 0.2 degrees is added for the other side of the arc.
-        ctx.arc(300, 300, 180+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), false);
-        // Draw the other arc counterclockwise
-        ctx.arc(300, 300, 180, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), (Math.PI/180)*arcSize*i, true);
-        //ctx.lineTo(550, 500);
-        ctx.fillStyle = 'rgb(255, 230, 0)';
-        ctx.fill();
+        drawArc(ctx, 300, 300, 180, 180+60, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
       }
     }
     
