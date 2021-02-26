@@ -1,11 +1,43 @@
+//////////////////////////////////////////////////
+// CLASSES
+//////////////////////////////////////////////////
+
+class MessageRing {
+  constructor(ringMessage, numOfMsgChars, binaryLen, paddingLen) {
+    this.ringMessage = ringMessage;
+    this.numOfMsgChars = numOfMsgChars;
+    this.binaryLen = binaryLen;
+    this.paddingLen = paddingLen;
+    
+    this.numOfArcs = numOfMsgChars * (binaryLen + paddingLen);
+    this.arcSize = 360 / numOfArcs;
+  }
+}
+
+//////////////////////////////////////////////////
+// BOOLEAN FLAGS
+//////////////////////////////////////////////////
+
+// True = enable gridlines
+var isDebugging = true;
+
+// True: Alphabet mode - each letter is encoded according to its order (A = 1, B = 2 etc)
+// False: ASCII/Unicode mode - each letter is encoded with its Unicode number
+var isLatinAlphabetMode = true;
+
+// True: Message is spread across more than 1 ring automatically
+// False: Message is manually defined for each ring
+var isSpreadAcrossRings = false;
+
+//////////////////////////////////////////////////
+// OTHER IMPORTANT VARIABLES
+//////////////////////////////////////////////////
+
 // Keycode for the 'Enter' key
 const KEY_ENTER = 13; 
 
 // Gap between grid lines
 const gridGap = 50;
-
-// True = enable gridlines
-var isDebugging = true;
 
 // The message to be encoded by the pattern
 var patternMessage = "mightyzz";
@@ -18,6 +50,19 @@ var arcSize = 360 / numOfArcs;
 
 // Amount of overlap between arcs in degrees (to make adjacent arcs merge with each other more seamlessly)
 var overlapDegrees = 0.3;
+
+/*
+NEXT TASKS:
+* Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
+*/
+
+let msgRing1 = new MessageRing("speedcore dandy", 8, 7, 3);
+console.log(msgRing1);
+console.log(msgRing1.ringMessage);
+
+//////////////////////////////////////////////////
+// FUNCTIONS
+//////////////////////////////////////////////////
 
 // Draw grid lines and ruler markings across the canvas element.
 // For debugging only
@@ -98,6 +143,10 @@ function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, an
   ctx.fillStyle = 'rgb(255, 230, 0)';
   ctx.fill();
 }
+
+//////////////////////////////////////////////////
+// BINARY CIRCULAR PATTERN GENERATOR SETUP
+//////////////////////////////////////////////////
 
 // Initialise the experimental canvas element
 function initExperiment() {
