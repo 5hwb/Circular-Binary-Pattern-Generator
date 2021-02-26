@@ -1,3 +1,9 @@
+/*
+NEXT TASKS:
+* Convert the code to use MessageRing
+* Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
+*/
+
 //////////////////////////////////////////////////
 // CLASSES
 //////////////////////////////////////////////////
@@ -21,7 +27,6 @@ class MessageRing {
     this.paddingLen = paddingLen;
     
     this.numOfArcs = numOfMsgChars * (binaryLen + paddingLen);
-    this.arcSize = 360 / numOfArcs;
   }
 }
 
@@ -61,11 +66,6 @@ var arcSize = 360 / numOfArcs;
 
 // Amount of overlap between arcs in degrees (to make adjacent arcs merge with each other more seamlessly)
 var overlapDegrees = 0.3;
-
-/*
-NEXT TASKS:
-* Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
-*/
 
 let msgRing1 = new MessageRing("speedcore dandy", 8, 7, 3);
 console.log(msgRing1);
@@ -167,7 +167,7 @@ function padBinaryString(binStr, numDigits) {
 }
 
 /**
- * Render an arc
+ * Render an arc to the given canvas context
  *
  * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
  * @param {number} centreX X-coordinates of centre point of arc
@@ -186,6 +186,31 @@ function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, an
   ctx.arc(centreX, centreY, innerRadius, angleEnd, angleStart, true);
   ctx.fillStyle = 'rgb(255, 230, 0)';
   ctx.fill();
+}
+
+/**
+ * Render the binary ring to the given canvas context
+ *
+ * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
+ * @param {number} centreX X-coordinates of centre point of ring
+ * @param {number} centreY Y-coordinates of centre point of ring
+ * @param {number} innerRadius Inner radius of ring
+ * @param {number} outerRadius Outer radius of ring
+ * @param {string} binaryMsg Binary mesage to encode in the ring
+ * @param {number} overlapDegrees Amount by which arcs should overlap
+ */
+function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
+                        binaryMsg, overlapDegrees) {
+  let numOfArcs = binaryMsg.length;
+  let arcSize = 360 / numOfArcs;
+
+  for (var i = 0; i < numOfArcs; i += 1) {
+    // If char is 1, draw an arc
+    if (binaryMsg[i] == 1) {
+      drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
+    }
+  }
+
 }
 
 //////////////////////////////////////////////////
@@ -238,19 +263,9 @@ function drawExperiment() {
     console.log(binaryMsg2);
         
     // Arcs to represent the pattern
-    for (var i = 0; i < numOfArcs; i += 1) {
-      // If char is 1, draw an arc
-      if (binaryMsg[i] == 1) {
-        drawArc(ctx, 300, 300, 120, 120+60.7, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
-      }
-    }
-    for (var i = 0; i < numOfArcs; i += 1) {
-      // If char is 1, draw an arc
-      if (binaryMsg2[i] == 1) {
-        drawArc(ctx, 300, 300, 180, 180+60.7, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
-      }
-    }
-    
+    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg, overlapDegrees);
+    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg2, overlapDegrees);
+    // 牛
     // Circle base
     ctx.beginPath();
     ctx.arc(300, 300, 300, (Math.PI/180)*0, (Math.PI/180)*360, false);
