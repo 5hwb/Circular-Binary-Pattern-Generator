@@ -2,7 +2,18 @@
 // CLASSES
 //////////////////////////////////////////////////
 
+/** @class MessageRing represents the message to encode in 1 single ring and
+  * any additional parameters required for rendering this ring. */
 class MessageRing {
+  /**
+   * Create a new MessageRing instance.
+   *
+   * @author: 5hwb (Perry Hartono)
+   * @param {string} ringMessage The ring message to encode
+   * @param {number} numOfMsgChars The number of message characters to encode in the pattern
+   * @param {number} binaryLen Length of binary encoding of character
+   * @param {number} paddingLen Length of additional padding between encoded characters
+   */
   constructor(ringMessage, numOfMsgChars, binaryLen, paddingLen) {
     this.ringMessage = ringMessage;
     this.numOfMsgChars = numOfMsgChars;
@@ -64,8 +75,14 @@ console.log(msgRing1.ringMessage);
 // FUNCTIONS
 //////////////////////////////////////////////////
 
-// Draw grid lines and ruler markings across the canvas element.
-// For debugging only
+/**
+ * Draw grid lines and ruler markings across the canvas element.
+ * For debugging only
+ *
+ * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
+ * @param {number} sizeX X-dimensions of grid line markings
+ * @param {number} sizeY Y-dimensions of grid line markings
+ */
 function drawGridLines(ctx, sizeX, sizeY) {
   // Print the X axis scales and gridlines
   for (var i = 0; i < sizeX; i += 10) {
@@ -116,23 +133,50 @@ function drawGridLines(ctx, sizeX, sizeY) {
   }
 }
 
-// Convert a Latin alphabet letter into its corresponding number in the Latin alphabet order (A, B, C etc)
+/**
+ * Convert a Latin alphabet letter into its corresponding number in the
+ * Latin alphabet order (A, B, C etc)
+ *
+ * @param {string} letter A 1-char string
+ * @return {number} Corresponding number in Latin alphabet order
+ */
 function letterToNum(letter) {
   // Note: 97 = char code for the lowercase letter 'a'
   return letter.charCodeAt(0) - 97;
 }
 
-// Convert an integer into a binary string
+/**
+ * Convert an integer into a binary string
+ *
+ * @param {number} num A positive integer
+ * @return {string} Corresponding number in binary format
+ */
 function numToBin(num) {
   return num.toString(2);
 }
 
-// Pad a binary string to the given amount of digits
+/**
+ * Pad a binary string to the given amount of digits
+ *
+ * @param {string} binStr A string representing a binary number
+ * @param {number} numDigits The desired number of digits
+ * @return {string} Binary number string with additional padding if required
+ */
 function padBinaryString(binStr, numDigits) {
   return "0".repeat(numDigits - binStr.length) + binStr;
 }
 
-// Render an arc
+/**
+ * Render an arc
+ *
+ * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
+ * @param {number} centreX X-coordinates of centre point of arc
+ * @param {number} centreY Y-coordinates of centre point of arc
+ * @param {number} innerRadius Inner radius of arc
+ * @param {number} outerRadius Outer radius of arc
+ * @param {number} angleStart Starting angle of arc
+ * @param {number} angleEnd Final angle of arc
+ */
 function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, angleEnd) {
   ctx.beginPath();
   // Draw an arc clockwise.
@@ -148,7 +192,9 @@ function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, an
 // BINARY CIRCULAR PATTERN GENERATOR SETUP
 //////////////////////////////////////////////////
 
-// Initialise the experimental canvas element
+/**
+ * Initialise the canvas element
+ */
 function initExperiment() {
   // Add an event listener to the canvas element to detect mouse clicks
   const canvas = document.querySelector('canvas');
@@ -162,7 +208,9 @@ function initExperiment() {
   window.requestAnimationFrame(drawExperiment);
 }
 
-// Render the experimental canvas element
+/**
+ * Render the canvas element
+ */
 function drawExperiment() {
   var c = document.getElementById("tutorial");
   
@@ -223,7 +271,12 @@ function drawExperiment() {
   }
 }
 
-// Get all input keypresses
+/**
+ * Get all input keypresses
+ * 
+ * @param {object} e Event data
+ * @param {object} context Target element
+ */
 function receiveKeyup(e, context) {
   console.log("=================");
   patternMessage = context.value.toLowerCase();
@@ -232,7 +285,9 @@ function receiveKeyup(e, context) {
   initExperiment();
 }
 
-// Start the canvas rendering
+/**
+ * Start the canvas rendering
+ */
 function init() {
   var userMessageElement = document.getElementById("usermessage");
   // Add event listeners to user message textarea
