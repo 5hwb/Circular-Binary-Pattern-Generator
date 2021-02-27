@@ -1,7 +1,7 @@
 /*
 NEXT TASKS:
-* Convert the code to use MessageRing
 * Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
+* Add frontend that can adapt to the above 2 states
 */
 
 //////////////////////////////////////////////////
@@ -189,14 +189,14 @@ function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, an
 }
 
 /**
- * Render the binary ring to the given canvas context
+ * Render a ring containing the binary message to the given canvas context
  *
  * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
  * @param {number} centreX X-coordinates of centre point of ring
  * @param {number} centreY Y-coordinates of centre point of ring
  * @param {number} innerRadius Inner radius of ring
  * @param {number} outerRadius Outer radius of ring
- * @param {string} binaryMsg Binary mesage to encode in the ring
+ * @param {string} binaryMsg Binary message to encode in the ring
  * @param {number} overlapDegrees Amount by which arcs should overlap
  */
 function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
@@ -210,7 +210,6 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
       drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
     }
   }
-
 }
 
 //////////////////////////////////////////////////
@@ -263,12 +262,13 @@ function drawExperiment() {
     console.log(binaryMsg2);
         
     // Arcs to represent the pattern
+    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg2, overlapDegrees);
     drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg, overlapDegrees);
     drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg2, overlapDegrees);
-    // 牛
+    
     // Circle base
     ctx.beginPath();
-    ctx.arc(300, 300, 300, (Math.PI/180)*0, (Math.PI/180)*360, false);
+    ctx.arc(300, 300, 300, 0, Math.PI * 2, false);
     ctx.fillStyle = 'rgb(100, 0, 0)';
     ctx.fill();
 
