@@ -35,7 +35,7 @@ class MessageRing {
    * Convert the given input string into a binary string
    */
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, "0", this.paddingLen, true);
+    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.msgOffset, "0", this.paddingLen, true);
   }
 }
 
@@ -180,6 +180,18 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
 //////////////////////////////////////////////////
 
 /**
+ * Shift the given string left by the given offset.
+ *
+ * @param {string} str The string to modify
+ * @param {number} offset Offset amount to shift the string
+ * @return {string} 
+ */
+function strOffset(str, num) {
+  num = num % str.length;
+  return str.slice(num, str.length) + str.slice(0, num);
+}
+
+/**
  * Convert a Latin alphabet letter into its corresponding number in the
  * Latin alphabet order (A, B, C etc)
  *
@@ -244,13 +256,17 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
  * @param {boolean} isPaddingSetToOne Should padding be encoded as a string of ones?
  * @return {string} The resulting binary number string
  */
-function convertToBinary(input, numChars, numDigits, paddingChar, numPaddingChars, isPaddingSetToOne) {
-  // convertToBinary(input, 8, 7, "0", 3, true)
+function convertToBinary(input, numChars, numDigits, offset, paddingChar, numPaddingChars, isPaddingSetToOne) {
+  // convertToBinary(input, 8, 7, 0, "0", 3, true)
   
   if (input.length < numChars) {
     input = appendChars(input, " ", numChars);
   }
   
+  // Offset the string by the given amount
+  input = strOffset(input, offset);
+  
+  // Transform the input to a binary string
   return input.slice(0, numChars).split("") // transform input string to character array
               .map(letter => letterToNum(letter))
               .map(num => numToBin(num))
@@ -285,14 +301,26 @@ function runUnitTests() {
     }
   }
   
+  // Test strOffset()
+  assertEquals("Shift the string 'yep' to the left by 1", strOffset("yep", 1), "epy");
+  assertEquals("Shift the string 'yep' to the right by 1", strOffset("yep", -1), "pye");
+  assertEquals("Shift the string 'yep' to the left by 3 (overflow)", strOffset("yep", 3), "yep");
+  assertEquals("Shift the string 'yep' to the left by 4 (overflow)", strOffset("yep", 4), "epy");
+  assertEquals("Shift the string 'yep' to the right by 3 (overflow)", strOffset("yep", -3), "yep");
+  assertEquals("Shift the string 'yep' to the right by 4 (overflow)", strOffset("yep", -4), "pye");
+  // Test letterToNum()
   assertEquals("Ensure that 'A' is identified as the 1st letter of the alphabet", letterToNum("a"), 1);
   assertEquals("Ensure that 'C' is identified as the 3rd letter of the alphabet", letterToNum("c"), 3);
+  // Test numToBin()
   assertEquals("Convert '1' to binary", numToBin(1), "1");
   assertEquals("Convert '3' to binary", numToBin(3), "11");
+  // Test padBinaryString()
   assertEquals("Pad '11' to 2 digits", padBinaryString("11", 2), "11");
   assertEquals("Pad '11' to 3 digits", padBinaryString("11", 3), "011");
+  // Test appendChars()
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
-  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, "0", 3, true), "0000011000");
+  // Test convertToBinary()
+  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, 0, "0", 3, true), "0000011000");
 }
 
 //////////////////////////////////////////////////
