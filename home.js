@@ -35,7 +35,7 @@ class MessageRing {
    * Convert the given input string into a binary string
    */
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, "0", this.paddingLen);
+    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, "0", this.paddingLen, true);
   }
 }
 
@@ -241,10 +241,11 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
  * @param {number} numDigits The desired number of binary digits
  * @param {string} paddingChar The padding char to insert
  * @param {number} numPaddingChars The desired number of padding chars to insert
+ * @param {boolean} isPaddingSetToOne Should padding be encoded as a string of ones?
  * @return {string} The resulting binary number string
  */
-function convertToBinary(input, numChars, numDigits, paddingChar, numPaddingChars) {
-  // convertToBinary(input, 8, 7, "0", 3)
+function convertToBinary(input, numChars, numDigits, paddingChar, numPaddingChars, isPaddingSetToOne) {
+  // convertToBinary(input, 8, 7, "0", 3, true)
   
   if (input.length < numChars) {
     input = appendChars(input, " ", numChars);
@@ -253,8 +254,19 @@ function convertToBinary(input, numChars, numDigits, paddingChar, numPaddingChar
   return input.slice(0, numChars).split("") // transform input string to character array
               .map(letter => letterToNum(letter))
               .map(num => numToBin(num))
-              .map(binStr => padBinaryString(binStr, numDigits))
-              .map(binStr => appendChars(binStr, paddingChar, numPaddingChars))
+              .map(binStr => {
+                if (isPaddingSetToOne && binStr == "0") {
+                  return "1".repeat(numDigits);
+                }
+                return padBinaryString(binStr, numDigits);
+              })
+              .map((binStr, i) => {
+                let isBlank = (binStr == "1".repeat(numDigits));
+                let isNotLastChar = i < numChars - 1;
+                let actualPaddingChar = (isPaddingSetToOne && isBlank && isNotLastChar)
+                    ? "1" : paddingChar;
+                return appendChars(binStr, actualPaddingChar, numPaddingChars);
+              })
               .join(""); // return array as string
 }
 
@@ -280,7 +292,7 @@ function runUnitTests() {
   assertEquals("Pad '11' to 2 digits", padBinaryString("11", 2), "11");
   assertEquals("Pad '11' to 3 digits", padBinaryString("11", 3), "011");
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
-  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, "0", 3), "0000011000");
+  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, "0", 3, true), "0000011000");
 }
 
 //////////////////////////////////////////////////
