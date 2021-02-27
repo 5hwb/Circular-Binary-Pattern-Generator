@@ -432,7 +432,7 @@ function init() {
   userMessageElement.addEventListener("keyup", function(event) {
     receiveKeyup(event, this);
   }, true);
-  userOffsetElement.addEventListener("keyup", function(event) {
+  userOffsetElement.addEventListener("input", function(event) {
     receiveKeyup2(event, this);
   }, true);
   
