@@ -187,9 +187,17 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
  * @return {number} Corresponding number in Latin alphabet order
  */
 function letterToNum(letter) {
-  // Note: 97 = char code for the lowercase letter 'a'.
-  // Add 1 so that 'a' == 1
-  return letter.toLowerCase().charCodeAt(0) - 97 + 1;
+  
+  // Check if letter is a valid Latin alphabet letter
+  const regex = new RegExp('[a-zA-Z]');
+  if (regex.test(letter)) {
+    // Note: 97 = char code for the lowercase letter 'a'.
+    // Add 1 so that 'a' == 1
+    return letter.toLowerCase().charCodeAt(0) - 97 + 1;
+  }
+
+  // Ignore punctuation and spaces
+  return 0;
 }
 
 /**
@@ -237,12 +245,17 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
  */
 function convertToBinary(input, numChars, numDigits, paddingChar, numPaddingChars) {
   // convertToBinary(input, 8, 7, "0", 3)
-  return input.split("") // transform input string to character array
+  
+  if (input.length < numChars) {
+    input = appendChars(input, " ", numChars);
+  }
+  
+  return input.slice(0, numChars).split("") // transform input string to character array
               .map(letter => letterToNum(letter))
               .map(num => numToBin(num))
               .map(binStr => padBinaryString(binStr, numDigits))
               .map(binStr => appendChars(binStr, paddingChar, numPaddingChars))
-              .slice(0, numChars).join(""); // limit to 8 chars and return array as string
+              .join(""); // return array as string
 }
 
 /**
@@ -267,7 +280,7 @@ function runUnitTests() {
   assertEquals("Pad '11' to 2 digits", padBinaryString("11", 2), "11");
   assertEquals("Pad '11' to 3 digits", padBinaryString("11", 3), "011");
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
-  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 8, 7, "0", 3), "0000011000");
+  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, "0", 3), "0000011000");
 }
 
 //////////////////////////////////////////////////
