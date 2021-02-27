@@ -17,22 +17,25 @@ class MessageRing {
    * @author: 5hwb (Perry Hartono)
    * @param {string} ringMessage The ring message to encode
    * @param {number} numOfMsgChars The number of message characters to encode in the pattern
-   * @param {number} binaryLen Length of binary encoding of character
+   * @param {number} numOfDigits The desired number of binary digits for each character
    * @param {number} paddingLen Length of additional padding between encoded characters
    * @param {number} msgOffset Amount of chars to shift the ring by
    */
-  constructor(ringMessage, numOfMsgChars, binaryLen, paddingLen, msgOffset) {
+  constructor(ringMessage, numOfMsgChars, numOfDigits, paddingLen, msgOffset) {
     this.ringMessage = ringMessage;
     this.numOfMsgChars = numOfMsgChars;
-    this.binaryLen = binaryLen;
+    this.numOfDigits = numOfDigits;
     this.paddingLen = paddingLen;
     this.msgOffset = msgOffset;
     
-    this.numOfArcs = numOfMsgChars * (binaryLen + paddingLen);
+    this.numOfArcs = numOfMsgChars * (numOfDigits + paddingLen);
   }
   
+  /**
+   * Convert the given input string into a binary string
+   */
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage, 8, 7, "0", 3);
+    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, "0", this.paddingLen);
   }
 }
 
@@ -63,9 +66,6 @@ const gridGap = 50;
 
 // The message to be encoded by the pattern
 var patternMessage = "mightyzz";
-
-let msgRing1 = new MessageRing(patternMessage, 8, 7, 3, 0);
-console.log(msgRing1.getBinaryMessage());
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -323,7 +323,8 @@ function drawExperiment() {
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var binaryMsg2 = convertToBinary(patternMessage, 8, 7, "0", 3);
+    var msgRing2 = new MessageRing(patternMessage, 8, 7, 3, 0);
+    var binaryMsg2 = msgRing2.getBinaryMessage();
     console.log(binaryMsg2);
         
     // Arcs to represent the pattern
