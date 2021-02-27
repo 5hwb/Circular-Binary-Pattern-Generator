@@ -19,12 +19,14 @@ class MessageRing {
    * @param {number} numOfMsgChars The number of message characters to encode in the pattern
    * @param {number} binaryLen Length of binary encoding of character
    * @param {number} paddingLen Length of additional padding between encoded characters
+   * @param {number} msgOffset Amount of chars to shift the ring by
    */
-  constructor(ringMessage, numOfMsgChars, binaryLen, paddingLen) {
+  constructor(ringMessage, numOfMsgChars, binaryLen, paddingLen, msgOffset) {
     this.ringMessage = ringMessage;
     this.numOfMsgChars = numOfMsgChars;
     this.binaryLen = binaryLen;
     this.paddingLen = paddingLen;
+    this.msgOffset = msgOffset;
     
     this.numOfArcs = numOfMsgChars * (binaryLen + paddingLen);
   }
@@ -58,16 +60,7 @@ const gridGap = 50;
 // The message to be encoded by the pattern
 var patternMessage = "mightyzz";
 
-// Number of arcs
-var numOfArcs = 80;
-
-// Size of the arc in degrees
-var arcSize = 360 / numOfArcs;
-
-// Amount of overlap between arcs in degrees (to make adjacent arcs merge with each other more seamlessly)
-var overlapDegrees = 0.3;
-
-let msgRing1 = new MessageRing("speedcore dandy", 8, 7, 3);
+let msgRing1 = new MessageRing("speedcore dandy", 8, 7, 3, 0);
 console.log(msgRing1);
 console.log(msgRing1.ringMessage);
 
@@ -222,9 +215,25 @@ function padBinaryString(binStr, numDigits) {
  * @param {string} theStr A string representing a binary number
  * @param {string} theChar The char to insert
  * @param {number} numChars The desired number of chars to insert
+ * @return {string} Binary number string with appended chars
  */
 function appendChars(theStr, theChar, numChars) {
   return theStr + theChar.repeat(numChars);
+}
+
+/**
+ * Convert the given input string into a binary string
+ *
+ * @param {string} input The string input to convert
+ * @return {string} The resulting binary number string
+ */
+function convertToBinary(input) {
+  return input.split("") // transform input string to character array
+              .map(letter => letterToNum(letter) + 1)
+              .map(num => numToBin(num))
+              .map(binStr => padBinaryString(binStr, 7))
+              .map(binStr => appendChars(binStr, '0', 3))
+              .slice(0, 8).join(""); // limit to 8 chars and return array as string
 }
 
 //////////////////////////////////////////////////
@@ -263,23 +272,17 @@ function drawExperiment() {
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
 
-    // Sample text
-    var encodedText = patternMessage.split("").map(letter => letterToNum(letter) + 1)
-                                          .map(num => numToBin(num))
-                                          .map(binStr => padBinaryString(binStr, 7));
-    console.log(encodedText);
-
     // Sample binary messages
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var binaryMsg2 = encodedText.slice(0, 8).map(binStr => appendChars(binStr, '0', 3)).join("");
+    var binaryMsg2 = convertToBinary(patternMessage);
     console.log(binaryMsg2);
         
     // Arcs to represent the pattern
-    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg2, overlapDegrees);
-    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg, overlapDegrees);
-    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg2, overlapDegrees);
+    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg2, 0.3);
+    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg, 0.3);
+    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg2, 0.3);
     
     // Circle base
     ctx.beginPath();
