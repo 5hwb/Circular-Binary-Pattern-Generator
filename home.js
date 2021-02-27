@@ -67,6 +67,8 @@ const gridGap = 50;
 // The message to be encoded by the pattern
 var patternMessage = "mightyzz";
 
+var patternOffset = 0;
+
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
 //////////////////////////////////////////////////
@@ -363,7 +365,7 @@ function drawExperiment() {
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var msgRing2 = new MessageRing(patternMessage, 8, 7, 3, 0);
+    var msgRing2 = new MessageRing(patternMessage, 8, 7, 3, patternOffset);
     var binaryMsg2 = msgRing2.getBinaryMessage();
     console.log(binaryMsg2);
         
@@ -407,13 +409,31 @@ function receiveKeyup(e, context) {
 }
 
 /**
+ * Get all input keypresses
+ * 
+ * @param {object} e Event data
+ * @param {object} context Target element
+ */
+function receiveKeyup2(e, context) {
+  console.log("=================");
+  patternOffset = context.value;
+  console.log(patternOffset);
+
+  initExperiment();
+}
+
+/**
  * Start the canvas rendering
  */
 function init() {
-  var userMessageElement = document.getElementById("usermessage");
-  // Add event listeners to user message textarea
+  var userMessageElement = document.getElementById("msg-string");
+  var userOffsetElement = document.getElementById("msg-offset");
+  // Add event listeners to user input fields
   userMessageElement.addEventListener("keyup", function(event) {
     receiveKeyup(event, this);
+  }, true);
+  userOffsetElement.addEventListener("keyup", function(event) {
+    receiveKeyup2(event, this);
   }, true);
   
   runUnitTests();
