@@ -72,7 +72,7 @@ console.log(msgRing1);
 console.log(msgRing1.ringMessage);
 
 //////////////////////////////////////////////////
-// FUNCTIONS
+// CANVAS SHAPE RENDERING FUNCTIONS
 //////////////////////////////////////////////////
 
 /**
@@ -134,39 +134,6 @@ function drawGridLines(ctx, sizeX, sizeY) {
 }
 
 /**
- * Convert a Latin alphabet letter into its corresponding number in the
- * Latin alphabet order (A, B, C etc)
- *
- * @param {string} letter A 1-char string
- * @return {number} Corresponding number in Latin alphabet order
- */
-function letterToNum(letter) {
-  // Note: 97 = char code for the lowercase letter 'a'
-  return letter.charCodeAt(0) - 97;
-}
-
-/**
- * Convert an integer into a binary string
- *
- * @param {number} num A positive integer
- * @return {string} Corresponding number in binary format
- */
-function numToBin(num) {
-  return num.toString(2);
-}
-
-/**
- * Pad a binary string to the given amount of digits
- *
- * @param {string} binStr A string representing a binary number
- * @param {number} numDigits The desired number of digits
- * @return {string} Binary number string with additional padding if required
- */
-function padBinaryString(binStr, numDigits) {
-  return "0".repeat(numDigits - binStr.length) + binStr;
-}
-
-/**
  * Render an arc to the given canvas context
  *
  * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
@@ -210,6 +177,54 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
       drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
     }
   }
+}
+
+//////////////////////////////////////////////////
+// UTILITY FUNCTIONS
+//////////////////////////////////////////////////
+
+/**
+ * Convert a Latin alphabet letter into its corresponding number in the
+ * Latin alphabet order (A, B, C etc)
+ *
+ * @param {string} letter A 1-char string
+ * @return {number} Corresponding number in Latin alphabet order
+ */
+function letterToNum(letter) {
+  // Note: 97 = char code for the lowercase letter 'a'
+  return letter.charCodeAt(0) - 97;
+}
+
+/**
+ * Convert an integer into a binary string
+ *
+ * @param {number} num A positive integer
+ * @return {string} Corresponding number in binary format
+ */
+function numToBin(num) {
+  return num.toString(2);
+}
+
+/**
+ * Pad a binary string to the given amount of digits
+ *
+ * @param {string} binStr A string representing a binary number
+ * @param {number} numDigits The desired number of digits
+ * @return {string} Binary number string with additional padding if required
+ */
+function padBinaryString(binStr, numDigits) {
+  return "0".repeat(numDigits - binStr.length) + binStr;
+}
+
+/**
+ * Append the given number of chars to the end of a string
+ *
+ * @param {string} theStr A string representing a binary number
+ * @param {string} theChar The char to insert
+ * @param {number} numChars The desired number of chars to insert
+ */
+function appendChars(theStr, theChar, numChars) {
+  return theStr + theChar.repeat(numChars);
 }
 
 //////////////////////////////////////////////////
@@ -258,7 +273,7 @@ function drawExperiment() {
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var binaryMsg2 = encodedText.slice(0, 8).map(binStr => binStr + "0".repeat(3)).join("");
+    var binaryMsg2 = encodedText.slice(0, 8).map(binStr => appendChars(binStr, '0', 3)).join("");
     console.log(binaryMsg2);
         
     // Arcs to represent the pattern
