@@ -32,7 +32,7 @@ class MessageRing {
   }
   
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage);
+    return convertToBinary(this.ringMessage, 8, 7, "0", 3);
   }
 }
 
@@ -206,7 +206,7 @@ function numToBin(num) {
  * Pad a binary string to the given amount of digits
  *
  * @param {string} binStr A string representing a binary number
- * @param {number} numDigits The desired number of digits
+ * @param {number} numDigits The desired number of binary digits
  * @return {string} Binary number string with additional padding if required
  */
 function padBinaryString(binStr, numDigits) {
@@ -217,27 +217,32 @@ function padBinaryString(binStr, numDigits) {
  * Append the given number of chars to the end of a string
  *
  * @param {string} theStr A string representing a binary number
- * @param {string} theChar The char to insert
- * @param {number} numChars The desired number of chars to insert
+ * @param {string} paddingChar The padding char to insert
+ * @param {number} numPaddingChars The desired number of padding chars to insert
  * @return {string} Binary number string with appended chars
  */
-function appendChars(theStr, theChar, numChars) {
-  return theStr + theChar.repeat(numChars);
+function appendChars(theStr, paddingChar, numPaddingChars) {
+  return theStr + paddingChar.repeat(numPaddingChars);
 }
 
 /**
  * Convert the given input string into a binary string
  *
  * @param {string} input The string input to convert
+ * @param {number} numChars The desired number of chars to be encoded in the string
+ * @param {number} numDigits The desired number of binary digits
+ * @param {string} paddingChar The padding char to insert
+ * @param {number} numPaddingChars The desired number of padding chars to insert
  * @return {string} The resulting binary number string
  */
-function convertToBinary(input) {
+function convertToBinary(input, numChars, numDigits, paddingChar, numPaddingChars) {
+  // convertToBinary(input, 8, 7, "0", 3)
   return input.split("") // transform input string to character array
               .map(letter => letterToNum(letter))
               .map(num => numToBin(num))
-              .map(binStr => padBinaryString(binStr, 7))
-              .map(binStr => appendChars(binStr, '0', 3))
-              .slice(0, 8).join(""); // limit to 8 chars and return array as string
+              .map(binStr => padBinaryString(binStr, numDigits))
+              .map(binStr => appendChars(binStr, paddingChar, numPaddingChars))
+              .slice(0, numChars).join(""); // limit to 8 chars and return array as string
 }
 
 /**
@@ -262,7 +267,7 @@ function runUnitTests() {
   assertEquals("Pad '11' to 2 digits", padBinaryString("11", 2), "11");
   assertEquals("Pad '11' to 3 digits", padBinaryString("11", 3), "011");
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
-  assertEquals("convertToBinary('c') -> '0000011000'", convertToBinary("c"), "0000011000");
+  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 8, 7, "0", 3), "0000011000");
 }
 
 //////////////////////////////////////////////////
@@ -305,7 +310,7 @@ function drawExperiment() {
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var binaryMsg2 = convertToBinary(patternMessage);
+    var binaryMsg2 = convertToBinary(patternMessage, 8, 7, "0", 3);
     console.log(binaryMsg2);
         
     // Arcs to represent the pattern
