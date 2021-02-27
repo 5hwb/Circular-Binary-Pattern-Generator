@@ -184,8 +184,9 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
  * @return {number} Corresponding number in Latin alphabet order
  */
 function letterToNum(letter) {
-  // Note: 97 = char code for the lowercase letter 'a'
-  return letter.charCodeAt(0) - 97;
+  // Note: 97 = char code for the lowercase letter 'a'.
+  // Add 1 so that 'a' == 1
+  return letter.toLowerCase().charCodeAt(0) - 97 + 1;
 }
 
 /**
@@ -229,11 +230,33 @@ function appendChars(theStr, theChar, numChars) {
  */
 function convertToBinary(input) {
   return input.split("") // transform input string to character array
-              .map(letter => letterToNum(letter) + 1)
+              .map(letter => letterToNum(letter))
               .map(num => numToBin(num))
               .map(binStr => padBinaryString(binStr, 7))
               .map(binStr => appendChars(binStr, '0', 3))
               .slice(0, 8).join(""); // limit to 8 chars and return array as string
+}
+
+/**
+ * A series of unit tests to ensure that the above functions work as intended
+ */
+function runUnitTests() {
+  function assertEquals(msg, actual, expected) {
+    if (expected == actual) {
+      console.log("✓ " + msg);
+    } else {
+      console.log("✗ " + msg + " (actual: " + actual + ", expected: " + expected + ")");
+    }
+  }
+  
+  assertEquals("Ensure that 'A' is identified as the 1st letter of the alphabet", letterToNum("a"), 1);
+  assertEquals("Ensure that 'C' is identified as the 3rd letter of the alphabet", letterToNum("c"), 3);
+  assertEquals("Convert '1' to binary", numToBin(1), "1");
+  assertEquals("Convert '3' to binary", numToBin(3), "11");
+  assertEquals("Pad '11' to 2 digits", padBinaryString("11", 2), "11");
+  assertEquals("Pad '11' to 3 digits", padBinaryString("11", 3), "011");
+  assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
+  assertEquals("convertToBinary('c') -> '0000011000'", convertToBinary("c"), "0000011000");
 }
 
 //////////////////////////////////////////////////
@@ -328,5 +351,6 @@ function init() {
     receiveKeyup(event, this);
   }, true);
   
+  runUnitTests();
   initExperiment();
 }
