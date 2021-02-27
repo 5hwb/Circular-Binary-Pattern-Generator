@@ -30,6 +30,10 @@ class MessageRing {
     
     this.numOfArcs = numOfMsgChars * (binaryLen + paddingLen);
   }
+  
+  getBinaryMessage() {
+    return convertToBinary(this.ringMessage);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -60,9 +64,8 @@ const gridGap = 50;
 // The message to be encoded by the pattern
 var patternMessage = "mightyzz";
 
-let msgRing1 = new MessageRing("speedcore dandy", 8, 7, 3, 0);
-console.log(msgRing1);
-console.log(msgRing1.ringMessage);
+let msgRing1 = new MessageRing(patternMessage, 8, 7, 3, 0);
+console.log(msgRing1.getBinaryMessage());
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -241,6 +244,9 @@ function convertToBinary(input) {
  * A series of unit tests to ensure that the above functions work as intended
  */
 function runUnitTests() {
+  /**
+   * Simple assert function
+   */
   function assertEquals(msg, actual, expected) {
     if (expected == actual) {
       console.log("✓ " + msg);
