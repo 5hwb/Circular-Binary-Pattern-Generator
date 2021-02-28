@@ -72,10 +72,13 @@ var msgRing1 = new MessageRing("dare", 8, 7, 3, 0, 0);
 var msgRing2 = new MessageRing("mighty", 8, 7, 3, 4, 0);
 var msgRing3 = new MessageRing("things", 8, 7, 3, -2, 0);
 
-// var patternMessage = "mightyzz";
-// 
-// var patternCharOffset = 0;
-// var patternDigitOffset = 0;
+// User input fields
+var userMessageElement = document.getElementById("user-string");
+var userNumCharsElement = document.getElementById("user-num-of-msg-chars");
+var userNumDigitsElement = document.getElementById("user-num-of-digits");
+var userPaddingLenElement = document.getElementById("user-padding-len");
+var userCharOffsetElement = document.getElementById("user-char-offset");
+var userDigitOffsetElement = document.getElementById("user-digit-offset");
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -343,6 +346,14 @@ function runUnitTests() {
  * Initialise the canvas element
  */
 function initExperiment() {
+  // Update user input fields
+  userMessageElement.value = msgRing2.ringMessage;
+  userNumCharsElement.value = msgRing2.numOfMsgChars;
+  userNumDigitsElement.value = msgRing2.numOfDigits;
+  userPaddingLenElement.value = msgRing2.paddingLen;
+  userCharOffsetElement.value = msgRing2.charOffset;
+  userDigitOffsetElement.value = msgRing2.digitOffset;
+  
   // Add an event listener to the canvas element to detect mouse clicks
   const canvas = document.querySelector('canvas');
   canvas.addEventListener('keydown', function(e) {
@@ -436,12 +447,6 @@ function receiveInput(e, context) {
  * Start the canvas rendering
  */
 function init() {
-  var userMessageElement = document.getElementById("msg-string");
-  var userNumCharsElement = document.getElementById("msg-num-of-msg-chars");
-  var userNumDigitsElement = document.getElementById("msg-num-of-digits");
-  var userPaddingLenElement = document.getElementById("msg-padding-len");
-  var userCharOffsetElement = document.getElementById("msg-char-offset");
-  var userDigitOffsetElement = document.getElementById("msg-digit-offset");
   // Add event listeners to user input fields
   userMessageElement.addEventListener("keyup", function(event) {
     receiveKeyup(event, this);
