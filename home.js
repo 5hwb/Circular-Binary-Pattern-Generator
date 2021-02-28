@@ -368,17 +368,23 @@ function drawExperiment() {
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
 
     // Sample binary messages
-    var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
-                  + "0001010000" + "1111111111" + "1111111111" + "1111111000";
+    // var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
+    //               + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var msgRing2 = new MessageRing(patternMessage, 8, 7, 3, patternCharOffset, patternDigitOffset);
+    var msgRing1 = new MessageRing("dare", 8, 7, 3, 0, patternDigitOffset);
+    var msgRing2 = new MessageRing("mighty", 8, 7, 3, 4, patternDigitOffset);
+    var msgRing3 = new MessageRing("things", 8, 7, 3, -2, patternDigitOffset);
+    var binaryMsg1 = msgRing1.getBinaryMessage();
+    console.log(binaryMsg1);
     var binaryMsg2 = msgRing2.getBinaryMessage();
     console.log(binaryMsg2);
+    var binaryMsg3 = msgRing3.getBinaryMessage();
+    console.log(binaryMsg3);
         
     // Arcs to represent the pattern
-    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg2, 0.3);
-    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg, 0.3);
-    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg2, 0.3);
+    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg1, 0.3);
+    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg2, 0.3);
+    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg3, 0.3);
     
     // Circle base
     ctx.beginPath();
