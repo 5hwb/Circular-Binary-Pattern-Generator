@@ -182,15 +182,15 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
 //////////////////////////////////////////////////
 
 /**
- * Shift the given string left by the given offset.
+ * Shift the given string or array left by the given offset.
  *
- * @param {string} str The string to modify
+ * @param {string} arr The string or array to modify
  * @param {number} offset Offset amount to shift the string
  * @return {string} 
  */
-function strOffset(str, num) {
-  num = num % str.length;
-  return str.slice(num, str.length) + str.slice(0, num);
+function applyOffset(arr, num) {
+  num = num % arr.length;
+  return arr.slice(num, arr.length).concat(arr.slice(0, num));
 }
 
 /**
@@ -265,27 +265,27 @@ function convertToBinary(input, numChars, numDigits, offset, paddingChar, numPad
     input = appendChars(input, " ", numChars);
   }
   
-  // Offset the string by the given amount
-  input = strOffset(input, offset);
-  
-  // Transform the input to a binary string
-  return input.slice(0, numChars).split("") // transform input string to character array
-              .map(letter => letterToNum(letter))
-              .map(num => numToBin(num))
-              .map(binStr => {
-                if (isPaddingSetToOne && binStr == "0") {
-                  return "1".repeat(numDigits);
-                }
-                return padBinaryString(binStr, numDigits);
-              })
-              .map((binStr, i) => {
-                let isBlank = (binStr == "1".repeat(numDigits));
-                let isNotLastChar = i < numChars - 1;
-                let actualPaddingChar = (isPaddingSetToOne && isBlank && isNotLastChar)
-                    ? "1" : paddingChar;
-                return appendChars(binStr, actualPaddingChar, numPaddingChars);
-              })
-              .join(""); // return array as string
+  // Transform the input to an array of binary strings, then process by each element 
+  let inputArr = input.slice(0, numChars).split("")
+      .map(letter => letterToNum(letter))
+      .map(num => numToBin(num))
+      .map(binStr => {
+        if (isPaddingSetToOne && binStr == "0") {
+          return "1".repeat(numDigits);
+        }
+        return padBinaryString(binStr, numDigits);
+      })
+      .map((binStr, i) => {
+        let isBlank = (binStr == "1".repeat(numDigits));
+        let isNotLastChar = i < numChars - 1;
+        let actualPaddingChar = (isPaddingSetToOne && isBlank && isNotLastChar)
+            ? "1" : paddingChar;
+        return appendChars(binStr, actualPaddingChar, numPaddingChars);
+      });
+
+  // Offset the array by the given amount
+  inputArr = applyOffset(inputArr, offset);
+  return inputArr.join(""); // return array as string
 }
 
 /**
@@ -303,13 +303,13 @@ function runUnitTests() {
     }
   }
   
-  // Test strOffset()
-  assertEquals("Shift the string 'yep' to the left by 1", strOffset("yep", 1), "epy");
-  assertEquals("Shift the string 'yep' to the right by 1", strOffset("yep", -1), "pye");
-  assertEquals("Shift the string 'yep' to the left by 3 (overflow)", strOffset("yep", 3), "yep");
-  assertEquals("Shift the string 'yep' to the left by 4 (overflow)", strOffset("yep", 4), "epy");
-  assertEquals("Shift the string 'yep' to the right by 3 (overflow)", strOffset("yep", -3), "yep");
-  assertEquals("Shift the string 'yep' to the right by 4 (overflow)", strOffset("yep", -4), "pye");
+  // Test applyOffset()
+  assertEquals("Shift the string 'yep' to the left by 1", applyOffset("yep", 1), "epy");
+  assertEquals("Shift the string 'yep' to the right by 1", applyOffset("yep", -1), "pye");
+  assertEquals("Shift the string 'yep' to the left by 3 (overflow)", applyOffset("yep", 3), "yep");
+  assertEquals("Shift the string 'yep' to the left by 4 (overflow)", applyOffset("yep", 4), "epy");
+  assertEquals("Shift the string 'yep' to the right by 3 (overflow)", applyOffset("yep", -3), "yep");
+  assertEquals("Shift the string 'yep' to the right by 4 (overflow)", applyOffset("yep", -4), "pye");
   // Test letterToNum()
   assertEquals("Ensure that 'A' is identified as the 1st letter of the alphabet", letterToNum("a"), 1);
   assertEquals("Ensure that 'C' is identified as the 3rd letter of the alphabet", letterToNum("c"), 3);
@@ -413,13 +413,10 @@ function receiveKeyup(e, context) {
  * 
  * @param {object} e Event data
  * @param {object} context Target element
+ * @return {string} The input value from the given context
  */
-function receiveKeyup2(e, context) {
-  console.log("=================");
-  patternOffset = context.value;
-  console.log(patternOffset);
-
-  initExperiment();
+function receiveInput(e, context) {
+  return context.value;
 }
 
 /**
@@ -433,7 +430,8 @@ function init() {
     receiveKeyup(event, this);
   }, true);
   userOffsetElement.addEventListener("input", function(event) {
-    receiveKeyup2(event, this);
+    patternOffset = receiveInput(event, this);
+    initExperiment();
   }, true);
   
   runUnitTests();
