@@ -68,10 +68,14 @@ const KEY_ENTER = 13;
 const gridGap = 50;
 
 // The message to be encoded by the pattern
-var patternMessage = "mightyzz";
+var msgRing1 = new MessageRing("dare", 8, 7, 3, 0, 0);
+var msgRing2 = new MessageRing("mighty", 8, 7, 3, 4, 0);
+var msgRing3 = new MessageRing("things", 8, 7, 3, -2, 0);
 
-var patternCharOffset = 0;
-var patternDigitOffset = 0;
+// var patternMessage = "mightyzz";
+// 
+// var patternCharOffset = 0;
+// var patternDigitOffset = 0;
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -371,9 +375,6 @@ function drawExperiment() {
     // var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
     //               + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var msgRing1 = new MessageRing("dare", 8, 7, 3, 0, patternDigitOffset);
-    var msgRing2 = new MessageRing("mighty", 8, 7, 3, 4, patternDigitOffset);
-    var msgRing3 = new MessageRing("things", 8, 7, 3, -2, patternDigitOffset);
     var binaryMsg1 = msgRing1.getBinaryMessage();
     console.log(binaryMsg1);
     var binaryMsg2 = msgRing2.getBinaryMessage();
@@ -414,8 +415,8 @@ function drawExperiment() {
  */
 function receiveKeyup(e, context) {
   console.log("=================");
-  patternMessage = context.value.toLowerCase();
-  console.log(patternMessage);
+  msgRing2.ringMessage = context.value.toLowerCase();
+  console.log(msgRing2.ringMessage);
 
   initExperiment();
 }
@@ -436,18 +437,33 @@ function receiveInput(e, context) {
  */
 function init() {
   var userMessageElement = document.getElementById("msg-string");
+  var userNumCharsElement = document.getElementById("msg-num-of-msg-chars");
+  var userNumDigitsElement = document.getElementById("msg-num-of-digits");
+  var userPaddingLenElement = document.getElementById("msg-padding-len");
   var userCharOffsetElement = document.getElementById("msg-char-offset");
   var userDigitOffsetElement = document.getElementById("msg-digit-offset");
   // Add event listeners to user input fields
   userMessageElement.addEventListener("keyup", function(event) {
     receiveKeyup(event, this);
   }, true);
+  userNumCharsElement.addEventListener("input", function(event) {
+    msgRing2.numOfMsgChars = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userNumDigitsElement.addEventListener("input", function(event) {
+    msgRing2.numOfDigits = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userPaddingLenElement.addEventListener("input", function(event) {
+    msgRing2.paddingLen = receiveInput(event, this);
+    initExperiment();
+  }, true);
   userCharOffsetElement.addEventListener("input", function(event) {
-    patternCharOffset = receiveInput(event, this);
+    msgRing2.charOffset = receiveInput(event, this);
     initExperiment();
   }, true);
   userDigitOffsetElement.addEventListener("input", function(event) {
-    patternDigitOffset = receiveInput(event, this);
+    msgRing2.digitOffset = receiveInput(event, this);
     initExperiment();
   }, true);
   

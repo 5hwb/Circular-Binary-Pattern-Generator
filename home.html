@@ -16,9 +16,16 @@
   <!-- PUT YOUR HTML GUI ITEMS HERE -->
   <canvas id="tutorial" width="600" height="600"></canvas>
   
+  <!--   constructor(ringMessage, numOfMsgChars, numOfDigits, paddingLen, charOffset, digitOffset) -->
   <form>
     <p><strong>Message</strong></p>
     <input type="text" id="msg-string"></input>
+    <p><strong>Message length (number of characters)</strong></p>
+    <input type="number" id="msg-num-of-msg-chars"></input>
+    <p><strong>Number of binary digits per char</strong></p>
+    <input type="number" id="msg-num-of-digits"></input>
+    <p><strong>Padding length</strong></p>
+    <input type="number" id="msg-padding-len"></input>
     <p><strong>Character Offset</strong></p>
     <input type="number" id="msg-char-offset"></input>
     <p><strong>Binary Digit Offset</strong></p>
