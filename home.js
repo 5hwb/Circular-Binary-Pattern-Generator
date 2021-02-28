@@ -1,5 +1,6 @@
 /*
 NEXT TASKS:
+* Allow user to offset by binary digit
 * Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
 * Add frontend that can adapt to the above 2 states
 */
@@ -19,14 +20,16 @@ class MessageRing {
    * @param {number} numOfMsgChars The number of message characters to encode in the pattern
    * @param {number} numOfDigits The desired number of binary digits for each character
    * @param {number} paddingLen Length of additional padding between encoded characters
-   * @param {number} msgOffset Amount of chars to shift the ring by
+   * @param {number} charOffset Amount of chars to shift the ring by
+   * @param {number} digitOffset Amount of binary digits to shift the ring by
    */
-  constructor(ringMessage, numOfMsgChars, numOfDigits, paddingLen, msgOffset) {
+  constructor(ringMessage, numOfMsgChars, numOfDigits, paddingLen, charOffset, digitOffset) {
     this.ringMessage = ringMessage;
     this.numOfMsgChars = numOfMsgChars;
     this.numOfDigits = numOfDigits;
     this.paddingLen = paddingLen;
-    this.msgOffset = msgOffset;
+    this.charOffset = charOffset;
+    this.digitOffset = digitOffset;
     
     this.numOfArcs = numOfMsgChars * (numOfDigits + paddingLen);
   }
@@ -35,7 +38,7 @@ class MessageRing {
    * Convert the given input string into a binary string
    */
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.msgOffset, "0", this.paddingLen, true);
+    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.charOffset, this.digitOffset, "0", this.paddingLen, true);
   }
 }
 
@@ -67,7 +70,8 @@ const gridGap = 50;
 // The message to be encoded by the pattern
 var patternMessage = "mightyzz";
 
-var patternOffset = 0;
+var patternCharOffset = 0;
+var patternDigitOffset = 0;
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -253,13 +257,15 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
  * @param {string} input The string input to convert
  * @param {number} numChars The desired number of chars to be encoded in the string
  * @param {number} numDigits The desired number of binary digits
+ * @param {number} charOffset Amount of chars to shift the ring by
+ * @param {number} digitOffset Amount of binary digits to shift the ring by
  * @param {string} paddingChar The padding char to insert
  * @param {number} numPaddingChars The desired number of padding chars to insert
  * @param {boolean} isPaddingSetToOne Should padding be encoded as a string of ones?
  * @return {string} The resulting binary number string
  */
-function convertToBinary(input, numChars, numDigits, offset, paddingChar, numPaddingChars, isPaddingSetToOne) {
-  // convertToBinary(input, 8, 7, 0, "0", 3, true)
+function convertToBinary(input, numChars, numDigits, charOffset, digitOffset, paddingChar, numPaddingChars, isPaddingSetToOne) {
+  // convertToBinary(input, 8, 7, 0, 0, "0", 3, true)
   
   if (input.length < numChars) {
     input = appendChars(input, " ", numChars);
@@ -283,9 +289,9 @@ function convertToBinary(input, numChars, numDigits, offset, paddingChar, numPad
         return appendChars(binStr, actualPaddingChar, numPaddingChars);
       });
 
-  // Offset the array by the given amount
-  inputArr = applyOffset(inputArr, offset);
-  return inputArr.join(""); // return array as string
+  // Shift the array by the given amount of chars before turning it to a string
+  let output = applyOffset(inputArr, charOffset).join("");
+  return applyOffset(output, digitOffset); // shift array digits
 }
 
 /**
@@ -322,7 +328,7 @@ function runUnitTests() {
   // Test appendChars()
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
   // Test convertToBinary()
-  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, 0, "0", 3, true), "0000011000");
+  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, 0, 0, "0", 3, true), "0000011000");
 }
 
 //////////////////////////////////////////////////
@@ -365,7 +371,7 @@ function drawExperiment() {
     var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
                   + "0001010000" + "1111111111" + "1111111111" + "1111111000";
 
-    var msgRing2 = new MessageRing(patternMessage, 8, 7, 3, patternOffset);
+    var msgRing2 = new MessageRing(patternMessage, 8, 7, 3, patternCharOffset, patternDigitOffset);
     var binaryMsg2 = msgRing2.getBinaryMessage();
     console.log(binaryMsg2);
         
@@ -424,13 +430,18 @@ function receiveInput(e, context) {
  */
 function init() {
   var userMessageElement = document.getElementById("msg-string");
-  var userOffsetElement = document.getElementById("msg-offset");
+  var userCharOffsetElement = document.getElementById("msg-char-offset");
+  var userDigitOffsetElement = document.getElementById("msg-digit-offset");
   // Add event listeners to user input fields
   userMessageElement.addEventListener("keyup", function(event) {
     receiveKeyup(event, this);
   }, true);
-  userOffsetElement.addEventListener("input", function(event) {
-    patternOffset = receiveInput(event, this);
+  userCharOffsetElement.addEventListener("input", function(event) {
+    patternCharOffset = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userDigitOffsetElement.addEventListener("input", function(event) {
+    patternDigitOffset = receiveInput(event, this);
     initExperiment();
   }, true);
   
