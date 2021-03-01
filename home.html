@@ -40,37 +40,46 @@
         <div class="row g-3">
           <div class="col-md-12 col-lg-12">
             <h4 class="mb-3">Ring 1 configuration</h4>
-            <form class="needs-validation" novalidate>
+            <form class="needs-validation was-validated" id="form1" novalidate>
               <div class="row g-3">
                 
                 <div class="col-12">
                   <label for="user-string" class="form-label">Ring message</label>
                   <input type="text" class="form-control" id="user-string" placeholder="" required>
+                  <div class="invalid-feedback">
+                    Ring message is required.
+                  </div>
                 </div>
 
                 <div class="col-sm-6">
                   <label for="user-num-of-msg-chars" class="form-label">Message length (number of characters)</label>
-                  <input type="number" class="form-control" id="user-num-of-msg-chars" placeholder="" value="" required>
+                  <input type="number" class="form-control" id="user-num-of-msg-chars" placeholder="" value="" min="0" required>
+                  <div class="invalid-feedback">
+                    Message length cannot be excluded.
+                  </div>
                 </div>
 
                 <div class="col-sm-6">
                   <label for="user-num-of-digits" class="form-label">Number of binary digits per char</label>
-                  <input type="number" class="form-control" id="user-num-of-digits" placeholder="" value="" required>
+                  <input type="number" class="form-control" id="user-num-of-digits" placeholder="" value="" min="0" required>
+                  <div class="invalid-feedback">
+                    Number of binary digits cannot be excluded.
+                  </div>
                 </div>
 
                 <div class="col-sm-4">
                   <label for="user-char-offset" class="form-label">Character offset</label>
-                  <input type="number" class="form-control" id="user-char-offset" placeholder="" value="" required>
+                  <input type="number" class="form-control" id="user-char-offset" placeholder="" value="">
                 </div>
 
                 <div class="col-sm-4">
                   <label for="user-digit-offset" class="form-label">Binary digit offset</label>
-                  <input type="number" class="form-control" id="user-digit-offset" placeholder="" value="" required>
+                  <input type="number" class="form-control" id="user-digit-offset" placeholder="" value="">
                 </div>
 
                 <div class="col-sm-4">
                   <label for="user-padding-len" class="form-label">Padding length</label>
-                  <input type="number" class="form-control" id="user-padding-len" placeholder="" value="" required>
+                  <input type="number" class="form-control" id="user-padding-len" placeholder="" value="" min="0">
                 </div>
               </div>
             </form>
@@ -85,6 +94,10 @@
       </div>
     </div>
   </div>
+  
+  <footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">© 2021 pcdandy</p>
+  </footer>
 
 
   <!-- BOOTSTRAP -->
@@ -94,6 +107,7 @@
   <!-- PUT YOUR CSS STYLING HERE -->
   <style type="text/css">
     canvas { border: 1px solid black; }
+    
   </style>
 </body>
 </html>
