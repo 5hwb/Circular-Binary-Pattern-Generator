@@ -57,9 +57,6 @@ class MessageRing {
 // BOOLEAN FLAGS
 //////////////////////////////////////////////////
 
-// True = enable gridlines
-let isDebugging = true;
-
 // True: Alphabet mode - each letter is encoded according to its order (A = 1, B = 2 etc)
 // False: ASCII/Unicode mode - each letter is encoded with its Unicode number
 let isLatinAlphabetMode = true;
@@ -76,9 +73,9 @@ let isSpreadAcrossRings = false;
 let sizeX = 600;
 let sizeY = 600;
 
-// Pattern margin percentages
-let innerMarginPercent = 0.25;
-let outerMarginPercent = 1.0;
+// Pattern radius percentages
+let innerPatternRadius = 75;
+let outerPatternRadius = 300;
 
 // Pattern colour
 let patternColour = "#ffffff";
@@ -619,8 +616,6 @@ function drawExperiment() {
 
     // Circle pattern dimensions
     let patternRadius = sizeX / 2;
-    let innerPatternRadius = patternRadius * innerMarginPercent;
-    let outerPatternRadius = patternRadius * outerMarginPercent;
     let patternWidth = outerPatternRadius - innerPatternRadius;
 
     // Render the message rings to form the pattern
@@ -641,10 +636,6 @@ function drawExperiment() {
     ctx.arc(sizeX / 2, sizeY / 2, patternRadius, 0, Math.PI * 2, false);
     ctx.fillStyle = backgroundColour;
     ctx.fill();
-
-    if (isDebugging) {
-      drawGridLines(ctx, sizeX, sizeY);
-    }
     
   } else {
     // canvas-unsupported code here
