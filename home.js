@@ -491,6 +491,71 @@ function receiveKeyup(e, context) {
 
   updateMinNumOfDigits(msgRing2, userNumDigitsLabel, userNumDigitsElement);
 
+  // Experiment with direct HTML manipulation to insert new forms for each ring (in the future)
+  let ringNum = 5;
+  let navTabsElement = document.getElementById("myTab");
+  let tabContentsElement = document.getElementById("myTabContent");
+  let navTabTemplate = `
+  <li class="nav-item" role="presentation">
+  <button class="nav-link" id="ring${ringNum}-tab" data-bs-toggle="tab" data-bs-target="#ring${ringNum}" type="button" role="tab" aria-controls="ring${ringNum}" aria-selected="false">Ring ${ringNum}</button>
+  </li>`;
+  let tabContentTemplate = `
+  <div class="tab-pane fade" id="ring${ringNum}" role="tabpanel" aria-labelledby="ring${ringNum}-tab">
+    <div class="row g-3">
+      <div class="col-md-12 col-lg-12">
+        <h4 class="mb-3">Ring ${ringNum} configuration</h4>
+        <form class="needs-validation was-validated" id="form1" novalidate>
+          <div class="row g-3">
+            
+            <div class="col-12">
+              <label for="ring${ringNum}-string" class="form-label" id="ring${ringNum}-string-label">Ring message</label>
+              <input type="text" class="form-control" id="ring${ringNum}-string" placeholder="" required>
+              <div class="invalid-feedback">
+                Ring message is required.
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="ring${ringNum}-num-of-msg-chars" class="form-label" id="ring${ringNum}-num-of-msg-chars-label">Message length (number of characters)</label>
+              <input type="number" class="form-control" id="ring${ringNum}-num-of-msg-chars" placeholder="" value="" min="0" required>
+              <div class="invalid-feedback">
+                Message length cannot be excluded.
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="ring${ringNum}-num-of-digits" class="form-label" id="ring${ringNum}-num-of-digits-label">Number of binary digits per char</label>
+              <input type="number" class="form-control" id="ring${ringNum}-num-of-digits" placeholder="" value="" min="0" required>
+              <div class="invalid-feedback">
+                Number of binary digits cannot be excluded.
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <label for="ring${ringNum}-char-offset" class="form-label" id="ring${ringNum}-char-offset-label">Character offset</label>
+              <input type="number" class="form-control" id="ring${ringNum}-char-offset" placeholder="" value="">
+            </div>
+
+            <div class="col-sm-4">
+              <label for="ring${ringNum}-digit-offset" class="form-label" id="ring${ringNum}-digit-offset-label">Binary digit offset</label>
+              <input type="number" class="form-control" id="ring${ringNum}-digit-offset" placeholder="" value="">
+            </div>
+
+            <div class="col-sm-4">
+              <label for="ring${ringNum}-padding-len" class="form-label" id="ring${ringNum}-padding-len-label">Padding length</label>
+              <input type="number" class="form-control" id="ring${ringNum}-padding-len" placeholder="" value="" min="0">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  `;
+
+  navTabsElement.insertAdjacentHTML("beforeend", navTabTemplate);
+  tabContentsElement.insertAdjacentHTML("beforeend", tabContentTemplate);
+
+
   initExperiment();
 }
 
