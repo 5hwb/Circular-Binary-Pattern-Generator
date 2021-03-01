@@ -339,8 +339,8 @@ function getNavTabTemplate(ringNum) {
   // Set the 1st element as active
   let showActive = (ringNum == 0) ? "active" : "";
   return `
-  <li class="nav-item" role="presentation">
-  <button class="nav-link ${showActive}" id="ring${ringNum}-tab" data-bs-toggle="tab" data-bs-target="#ring${ringNum}" type="button" role="tab" aria-controls="ring${ringNum}" aria-selected="false">Ring ${ringNum}</button>
+  <li class="nav-item" id="ring${ringNum}-tab" role="presentation">
+  <button class="nav-link ${showActive}" id="ring${ringNum}-tab-button" data-bs-toggle="tab" data-bs-target="#ring${ringNum}" type="button" role="tab" aria-controls="ring${ringNum}" aria-selected="false">Ring ${ringNum}</button>
   </li>`;
 }
 
@@ -354,7 +354,7 @@ function getTabContentTemplate(ringNum) {
   // Set the 1st element as active
   let showActive = (ringNum == 0) ? "show active" : "";
   return `
-  <div class="tab-pane fade ${showActive}" id="ring${ringNum}" role="tabpanel" aria-labelledby="ring${ringNum}-tab">
+  <div class="tab-pane fade ${showActive}" id="ring${ringNum}" role="tabpanel" aria-labelledby="ring${ringNum}-tab-button">
     <div class="row g-3">
       <div class="col-md-12 col-lg-12">
         <h4 class="mb-3">Ring ${ringNum} configuration</h4>
