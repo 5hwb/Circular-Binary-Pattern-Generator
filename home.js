@@ -1,8 +1,8 @@
 /*
 NEXT TASKS:
-* Add ability to add rings dynamically with size config (must add 2 new parameters to MessageRing: ring width and radius)
-* Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
-* Add frontend that can adapt to the above 2 states
+* Add global settings for all MessageRings (e.g. colours, size) 
+* Add ability to add rings dynamically
+* Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself (Add frontend that can adapt to the above 2 states)
 */
 
 //////////////////////////////////////////////////
