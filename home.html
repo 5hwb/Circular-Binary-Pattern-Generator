@@ -28,6 +28,14 @@
     <form class="needs-validation was-validated" id="patgen" novalidate>
       <div class="row g-3">
         
+        <div class="col-12">
+          <label for="patgen-num-of-rings" class="form-label" id="patgen-num-of-rings-label">Number of pattern rings</label>
+          <input type="number" class="form-control" id="patgen-num-of-rings" placeholder="" min=0 required>
+          <div class="invalid-feedback">
+            Number of rings is required.
+          </div>
+        </div>
+
         <div class="col-sm-6">
           <label for="patgen-inner-radius" class="form-label" id="patgen-inner-radius-label">Inner pattern radius</label>
           <input type="range" class="form-range" id="patgen-inner-radius" placeholder="" min="0" max="300" value="0" required>

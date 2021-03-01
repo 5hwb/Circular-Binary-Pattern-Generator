@@ -1,6 +1,5 @@
 /*
 NEXT TASKS:
-* Add global settings for all MessageRings (e.g. colours, size) 
 * Add ability to add rings dynamically
 */
 
@@ -73,16 +72,6 @@ let isSpreadAcrossRings = false;
 let sizeX = 600;
 let sizeY = 600;
 
-// Pattern radius percentages
-let innerPatternRadius = 75;
-let outerPatternRadius = 300;
-
-// Pattern colour
-let patternColour = "#ffffff";
-
-// Background colour
-let backgroundColour = "#000000";
-
 // Number of MessageRings to display
 let numOfMsgRings = 3;
 
@@ -96,6 +85,16 @@ let msgRings = [
 // Overlap parameters (to minimise artifacts)
 let arcOverlap = 0.3;
 let ringOverlap = 0.7;
+
+// Pattern radius percentages
+let innerPatternRadius = 75;
+let outerPatternRadius = 300;
+
+// Pattern colour
+let patternColour = "#ffffff";
+
+// Background colour
+let backgroundColour = "#000000";
 
 //////////////////////////////////////////////////
 // OTHER IMPORTANT VARIABLES
@@ -563,12 +562,17 @@ function generateForms(msgRings) {
  */
 function addMainFormEventListeners() {
   // Get the user input fields
+  let userNumOfRingsElement = document.getElementById(`patgen-num-of-rings`);
   let userInnerRadiusElement = document.getElementById(`patgen-inner-radius`);
   let userOuterRadiusElement = document.getElementById(`patgen-outer-radius`);
   let userPatternColourElement = document.getElementById(`patgen-pattern-colour`);
   let userBackgroundColourElement = document.getElementById(`patgen-background-colour`);
 
   // Add event listeners to user input fields
+  userNumOfRingsElement.addEventListener("input", function(event) {
+    numOfMsgRings = parseInt(receiveInput(event, this));
+    initExperiment();
+  }, true);
   userInnerRadiusElement.addEventListener("input", function(event) {
     innerPatternRadius = parseInt(receiveInput(event, this));
     console.log("innerPatternRadius = " + innerPatternRadius);
@@ -589,10 +593,15 @@ function addMainFormEventListeners() {
   }, true);
 
   // Update user input fields
+  userNumOfRingsElement.value = parseInt(numOfMsgRings);
   userInnerRadiusElement.value = parseInt(innerPatternRadius);
   userOuterRadiusElement.value = parseInt(outerPatternRadius);
   userPatternColourElement.value = patternColour;
   userBackgroundColourElement.value = backgroundColour;
+
+  // Update ranges
+  userInnerRadiusElement.max = sizeX / 2;
+  userOuterRadiusElement.max = sizeX / 2;
 }
 
 //////////////////////////////////////////////////
