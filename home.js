@@ -1,7 +1,5 @@
 /*
 NEXT TASKS:
-* Dynamically generate the forms from a list of MessageRing objects
-* Expand the Bootstrap form so that it can configure the other rings as well
 * Add ability to add rings dynamically with size config (must add 2 new parameters to MessageRing: ring width and radius)
 * Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
 * Add frontend that can adapt to the above 2 states
@@ -373,9 +371,11 @@ function runUnitTests() {
  * @return {string} Fully-formed nav tab HTML string
  */
 function getNavTabTemplate(ringNum) {
+  // Set the 1st element as active
+  let showActive = (ringNum == 0) ? "active" : "";
   return `
   <li class="nav-item" role="presentation">
-  <button class="nav-link" id="ring${ringNum}-tab" data-bs-toggle="tab" data-bs-target="#ring${ringNum}" type="button" role="tab" aria-controls="ring${ringNum}" aria-selected="false">Ring ${ringNum}</button>
+  <button class="nav-link ${showActive}" id="ring${ringNum}-tab" data-bs-toggle="tab" data-bs-target="#ring${ringNum}" type="button" role="tab" aria-controls="ring${ringNum}" aria-selected="false">Ring ${ringNum}</button>
   </li>`;
 }
 
@@ -386,8 +386,10 @@ function getNavTabTemplate(ringNum) {
  * @return {string} Fully-formed tab content string
  */
 function getTabContentTemplate(ringNum) {
+  // Set the 1st element as active
+  let showActive = (ringNum == 0) ? "show active" : "";
   return `
-  <div class="tab-pane fade" id="ring${ringNum}" role="tabpanel" aria-labelledby="ring${ringNum}-tab">
+  <div class="tab-pane fade ${showActive}" id="ring${ringNum}" role="tabpanel" aria-labelledby="ring${ringNum}-tab">
     <div class="row g-3">
       <div class="col-md-12 col-lg-12">
         <h4 class="mb-3">Ring ${ringNum} configuration</h4>
@@ -545,7 +547,6 @@ function drawExperiment() {
   
   let sizeX = 600;
   let sizeY = 600;
-  let time = new Date();
   
   if (c.getContext) {
     let ctx = c.getContext("2d");
