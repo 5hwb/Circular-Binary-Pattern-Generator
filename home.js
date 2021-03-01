@@ -2,7 +2,6 @@
 NEXT TASKS:
 * Add global settings for all MessageRings (e.g. colours, size) 
 * Add ability to add rings dynamically
-* Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself (Add frontend that can adapt to the above 2 states)
 */
 
 //////////////////////////////////////////////////
@@ -358,8 +357,6 @@ function runUnitTests() {
     }
   }
   
-  
-
   // Test applyOffset()
   assertEquals("Shift the string 'yep' to the left by 1", applyOffset("yep", 1), "epy");
   assertEquals("Shift the string 'yep' to the right by 1", applyOffset("yep", -1), "pye");
@@ -386,7 +383,7 @@ function runUnitTests() {
 }
 
 //////////////////////////////////////////////////
-// HTML TEMPLATE RENDERING FUNCTIONS
+// HTML TEMPLATE RENDERING AND EVENT LISTENER FUNCTIONS
 //////////////////////////////////////////////////
 
 /**
@@ -468,6 +465,65 @@ function getTabContentTemplate(ringNum) {
 }
 
 /**
+ * Add event listeners to the elements of the MessageRing form with the given number.
+ * 
+ * @param {number} ringNum Number of the MessageRing
+ */
+function addRingFormEventListeners(ringNum) {
+  // Get the user input fields
+  let userFormElement = document.getElementById(`ring${ringNum}`);
+  let userMessageElement = document.getElementById(`ring${ringNum}-string`);
+  let userNumCharsElement = document.getElementById(`ring${ringNum}-num-of-msg-chars`);
+  let userNumDigitsElement = document.getElementById(`ring${ringNum}-num-of-digits`);
+  let userCharOffsetElement = document.getElementById(`ring${ringNum}-char-offset`);
+  let userDigitOffsetElement = document.getElementById(`ring${ringNum}-digit-offset`);
+  let userPaddingLenElement = document.getElementById(`ring${ringNum}-padding-len`);
+  let userMessageLabel = document.getElementById(`ring${ringNum}-string-label`);
+  let userNumCharsLabel = document.getElementById(`ring${ringNum}-num-of-msg-chars-label`);
+  let userNumDigitsLabel = document.getElementById(`ring${ringNum}-num-of-digits-label`);
+  let userCharOffsetLabel = document.getElementById(`ring${ringNum}-char-offset-label`);
+  let userDigitOffsetLabel = document.getElementById(`ring${ringNum}-digit-offset-label`);
+  let userPaddingLenLabel = document.getElementById(`ring${ringNum}-padding-len-label`);
+
+  // Add event listeners to user input fields
+  userFormElement.addEventListener("submit", function(event) {
+    // Disable page refreshing on form submission
+    event.preventDefault();
+  });
+  userMessageElement.addEventListener("keyup", function(event) {
+    receiveKeyup(event, this, msgRings[ringNum], userNumDigitsLabel, userNumDigitsElement);
+  }, true);
+  userNumCharsElement.addEventListener("input", function(event) {
+    msgRings[ringNum].numOfMsgChars = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userNumDigitsElement.addEventListener("input", function(event) {
+    msgRings[ringNum].numOfDigits = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userPaddingLenElement.addEventListener("input", function(event) {
+    msgRings[ringNum].paddingLen = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userCharOffsetElement.addEventListener("input", function(event) {
+    msgRings[ringNum].charOffset = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userDigitOffsetElement.addEventListener("input", function(event) {
+    msgRings[ringNum].digitOffset = receiveInput(event, this);
+    initExperiment();
+  }, true);
+
+  // Update user input fields
+  userMessageElement.value = msgRings[ringNum].ringMessage;
+  userNumCharsElement.value = msgRings[ringNum].numOfMsgChars;
+  userNumDigitsElement.value = msgRings[ringNum].numOfDigits;
+  userPaddingLenElement.value = msgRings[ringNum].paddingLen;
+  userCharOffsetElement.value = msgRings[ringNum].charOffset;
+  userDigitOffsetElement.value = msgRings[ringNum].digitOffset;
+}
+
+/**
  * Generate forms dynamically from an array of MessageRing instances
  * 
  * @param {MessageRing[]} msgRings Array of MessageRing instances
@@ -488,59 +544,32 @@ function generateForms(msgRings) {
     navTabsElement.insertAdjacentHTML("beforeend", navTabTemplate);
     tabContentsElement.insertAdjacentHTML("beforeend", tabContentTemplate);
 
-    // Get the user input fields
-    let userFormElement = document.getElementById(`ring${ringNum}`);
-    let userMessageElement = document.getElementById(`ring${ringNum}-string`);
-    let userNumCharsElement = document.getElementById(`ring${ringNum}-num-of-msg-chars`);
-    let userNumDigitsElement = document.getElementById(`ring${ringNum}-num-of-digits`);
-    let userCharOffsetElement = document.getElementById(`ring${ringNum}-char-offset`);
-    let userDigitOffsetElement = document.getElementById(`ring${ringNum}-digit-offset`);
-    let userPaddingLenElement = document.getElementById(`ring${ringNum}-padding-len`);
-    let userMessageLabel = document.getElementById(`ring${ringNum}-string-label`);
-    let userNumCharsLabel = document.getElementById(`ring${ringNum}-num-of-msg-chars-label`);
-    let userNumDigitsLabel = document.getElementById(`ring${ringNum}-num-of-digits-label`);
-    let userCharOffsetLabel = document.getElementById(`ring${ringNum}-char-offset-label`);
-    let userDigitOffsetLabel = document.getElementById(`ring${ringNum}-digit-offset-label`);
-    let userPaddingLenLabel = document.getElementById(`ring${ringNum}-padding-len-label`);
-
-    // Add event listeners to user input fields
-    userFormElement.addEventListener("submit", function(event) {
-      // Disable page refreshing on form submission
-      event.preventDefault();
-    });
-    userMessageElement.addEventListener("keyup", function(event) {
-      receiveKeyup(event, this, msgRings[i], userNumDigitsLabel, userNumDigitsElement);
-    }, true);
-    userNumCharsElement.addEventListener("input", function(event) {
-      msgRings[i].numOfMsgChars = receiveInput(event, this);
-      initExperiment();
-    }, true);
-    userNumDigitsElement.addEventListener("input", function(event) {
-      msgRings[i].numOfDigits = receiveInput(event, this);
-      initExperiment();
-    }, true);
-    userPaddingLenElement.addEventListener("input", function(event) {
-      msgRings[i].paddingLen = receiveInput(event, this);
-      initExperiment();
-    }, true);
-    userCharOffsetElement.addEventListener("input", function(event) {
-      msgRings[i].charOffset = receiveInput(event, this);
-      initExperiment();
-    }, true);
-    userDigitOffsetElement.addEventListener("input", function(event) {
-      msgRings[i].digitOffset = receiveInput(event, this);
-      initExperiment();
-    }, true);
-
-    // Update user input fields
-    userMessageElement.value = msgRings[i].ringMessage;
-    userNumCharsElement.value = msgRings[i].numOfMsgChars;
-    userNumDigitsElement.value = msgRings[i].numOfDigits;
-    userPaddingLenElement.value = msgRings[i].paddingLen;
-    userCharOffsetElement.value = msgRings[i].charOffset;
-    userDigitOffsetElement.value = msgRings[i].digitOffset;
+    addRingFormEventListeners(ringNum);
   }
 
+}
+
+/**
+ * Add event listeners for the main form.
+ */
+function addMainFormEventListeners() {
+  // Get the user input fields
+  let userPatternColourElement = document.getElementById(`patgen-pattern-colour`);
+  let userBackgroundColourElement = document.getElementById(`patgen-background-colour`);
+
+  // Add event listeners to user input fields
+  userPatternColourElement.addEventListener("input", function(event) {
+    patternColour = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  userBackgroundColourElement.addEventListener("input", function(event) {
+    backgroundColour = receiveInput(event, this);
+    initExperiment();
+  }, true);
+
+  // Update user input fields
+  userPatternColourElement.value = patternColour;
+  userBackgroundColourElement.value = backgroundColour;
 }
 
 //////////////////////////////////////////////////
@@ -675,20 +704,7 @@ function receiveInput(e, context) {
  */
 function init() {
   generateForms(msgRings);
-
-  // Add event listeners for main form
-  let userPatternColourElement = document.getElementById(`patgen-pattern-colour`);
-  userPatternColourElement.addEventListener("input", function(event) {
-    patternColour = receiveInput(event, this);
-    initExperiment();
-  }, true);
-  let userBackgroundColourElement = document.getElementById(`patgen-background-colour`);
-  userBackgroundColourElement.addEventListener("input", function(event) {
-    backgroundColour = receiveInput(event, this);
-    initExperiment();
-  }, true);
-
-  
+  addMainFormEventListeners();
   runUnitTests();
   initExperiment();
 }
