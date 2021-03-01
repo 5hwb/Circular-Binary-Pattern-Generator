@@ -22,8 +22,30 @@
     <div align="center">
       <canvas id="tutorial" width="600" height="600"></canvas>
     </div>
+
+    <!-- Main config form -->
+    <form class="needs-validation was-validated" id="patgen" novalidate>
+      <div class="row g-3">
+        
+        <div class="col-sm-6">
+          <label for="patgen-pattern-colour" class="form-label" id="patgen-pattern-colour-label">Pattern colour (for binary '1')</label>
+          <input type="color" class="form-control" id="patgen-pattern-colour" placeholder="" required>
+          <div class="invalid-feedback">
+            Pattern colour is required.
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="patgen-background-colour" class="form-label" id="patgen-background-colour-label">Background colour (for binary '0')</label>
+          <input type="color" class="form-control" id="patgen-background-colour" placeholder="" required>
+          <div class="invalid-feedback">
+            Background colour is required.
+          </div>
+        </div>
+
+    </form>
     
-    <!--   constructor(ringMessage, numOfMsgChars, numOfDigits, paddingLen, charOffset, digitOffset) -->
+    <!-- Tabbed elements for MessageRing config forms -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <!--<li class="nav-item" role="presentation">
         <button class="nav-link active" id="ring1-tab" data-bs-toggle="tab" data-bs-target="#ring1" type="button" role="tab" aria-controls="ring1" aria-selected="true">Ring 1</button>
@@ -40,7 +62,7 @@
         <div class="row g-3">
           <div class="col-md-12 col-lg-12">
             <h4 class="mb-3">Ring 1 configuration</h4>
-            <form class="needs-validation was-validated" id="form1" novalidate>
+            <form class="needs-validation was-validated" id="ring1" novalidate>
               <div class="row g-3">
                 
                 <div class="col-12">

@@ -34,9 +34,20 @@ class MessageRing {
     this.minNumOfDigits = 0;
     this.numOfArcs = numOfMsgChars * (numOfDigits + paddingLen);
   }
+
+  /**
+   * Create an 'empty' MessageRing instance.
+   * 
+   * @return A new MessageRing instance
+   */
+  static createEmptyInstance() {
+    return new MessageRing("", 1, 5, 2, 0, 0);
+  }
   
   /**
    * Convert the given input string into a binary string
+   * 
+   * @return The binary string representation of this MessageRing
    */
   getBinaryMessage() {
     return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.charOffset, this.digitOffset, "0", this.paddingLen, true);
@@ -59,6 +70,26 @@ let isLatinAlphabetMode = true;
 let isSpreadAcrossRings = false;
 
 //////////////////////////////////////////////////
+// PATTERN GENERATOR PARAMETERS
+//////////////////////////////////////////////////
+
+// Pattern colour
+let patternColour = "#ffffff";
+
+// Background colour
+let backgroundColour = "#000000";
+
+// Number of MessageRings to display
+let numOfMsgRings = 3;
+
+// List of MessageRing instances
+let msgRings = [
+  new MessageRing("dare", 8, 7, 3, 0, 0),
+  new MessageRing("mighty", 8, 7, 3, 4, 0),
+  new MessageRing("things", 8, 7, 3, -2, 0)
+];
+
+//////////////////////////////////////////////////
 // OTHER IMPORTANT VARIABLES
 //////////////////////////////////////////////////
 
@@ -67,13 +98,6 @@ const KEY_ENTER = 13;
 
 // Gap between grid lines
 const gridGap = 50;
-
-// The message to be encoded by the pattern
-let msgRings = [
-  new MessageRing("dare", 8, 7, 3, 0, 0),
-  new MessageRing("mighty", 8, 7, 3, 4, 0),
-  new MessageRing("things", 8, 7, 3, -2, 0)
-];
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -147,15 +171,16 @@ function drawGridLines(ctx, sizeX, sizeY) {
  * @param {number} outerRadius Outer radius of arc
  * @param {number} angleStart Starting angle of arc
  * @param {number} angleEnd Final angle of arc
+ * @param {string} fillColour Fill colour of arc
  */
-function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, angleEnd) {
+function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, angleEnd, fillColour) {
   ctx.beginPath();
   // Draw an arc clockwise.
   // Formula is (Math.PI/180)*deg where 'deg' is the angle in degrees.
   ctx.arc(centreX, centreY, outerRadius, angleStart, angleEnd, false);
   // Draw the other arc counterclockwise
   ctx.arc(centreX, centreY, innerRadius, angleEnd, angleStart, true);
-  ctx.fillStyle = 'rgb(255, 230, 0)';
+  ctx.fillStyle = fillColour;
   ctx.fill();
 }
 
@@ -178,7 +203,7 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
   for (let i = 0; i < numOfArcs; i += 1) {
     // If char is 1, draw an arc
     if (binaryMsg[i] == 1) {
-      drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
+      drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), patternColour);
     }
   }
 }
@@ -573,7 +598,7 @@ function drawExperiment() {
     // Circle base
     ctx.beginPath();
     ctx.arc(300, 300, 300, 0, Math.PI * 2, false);
-    ctx.fillStyle = 'rgb(100, 0, 0)';
+    ctx.fillStyle = backgroundColour;
     ctx.fill();
 
     if (isDebugging) {
@@ -618,8 +643,8 @@ function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
  * Set the ring message value from the input field.
  * (TODO: merge this with receiveInput()?)
  * 
- * @param {object} e Event data
- * @param {object} context Target element
+ * @param {KeyboardEvent} e Event data
+ * @param {HTMLElement} context Target element
  * @param {MessageRing} msgRing The MessageRing to update
  * @param {HTMLElement} numDigitsLabel HTML label for num of digits
  * @param {HTMLElement} numDigitsElement HTML input for num of digits
@@ -635,8 +660,8 @@ function receiveKeyup(e, context, msgRing, numDigitsLabel, numDigitsElement) {
 /**
  * Get the value from the input field
  * 
- * @param {object} e Event data
- * @param {object} context Target element
+ * @param {Event} e Event data
+ * @param {HTMLElement} context Target element
  * @return {string} The input value from the given context
  */
 function receiveInput(e, context) {
@@ -650,6 +675,19 @@ function receiveInput(e, context) {
  */
 function init() {
   generateForms(msgRings);
+
+  // Add event listeners for main form
+  let userPatternColourElement = document.getElementById(`patgen-pattern-colour`);
+  userPatternColourElement.addEventListener("input", function(event) {
+    patternColour = receiveInput(event, this);
+    initExperiment();
+  }, true);
+  let userBackgroundColourElement = document.getElementById(`patgen-background-colour`);
+  userBackgroundColourElement.addEventListener("input", function(event) {
+    backgroundColour = receiveInput(event, this);
+    initExperiment();
+  }, true);
+
   
   runUnitTests();
   initExperiment();
