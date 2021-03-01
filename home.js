@@ -1,6 +1,8 @@
 /*
 NEXT TASKS:
-* Allow user to offset by binary digit
+* Expand the Bootstrap form so that it can configure the other rings as well
+* Implement Bootstrap validation (so that binary num can't be set below a certain amount for example)
+* Add ability to add rings dynamically with size config (must add 2 new parameters to MessageRing: ring width and radius)
 * Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
 * Add frontend that can adapt to the above 2 states
 */
@@ -31,6 +33,7 @@ class MessageRing {
     this.charOffset = charOffset;
     this.digitOffset = digitOffset;
     
+    this.minNumOfDigits = 0;
     this.numOfArcs = numOfMsgChars * (numOfDigits + paddingLen);
   }
   
@@ -73,6 +76,7 @@ var msgRing2 = new MessageRing("mighty", 8, 7, 3, 4, 0);
 var msgRing3 = new MessageRing("things", 8, 7, 3, -2, 0);
 
 // User input fields
+var userFormElement = document.getElementById("form1");
 var userMessageElement = document.getElementById("user-string");
 var userNumCharsElement = document.getElementById("user-num-of-msg-chars");
 var userNumDigitsElement = document.getElementById("user-num-of-digits");
@@ -259,6 +263,29 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
 }
 
 /**
+ * Get the minimum amount of binary digits required to represent a message string
+ * 
+ * @param {string} input The string input to examine
+ * @param {number} numChars The desired number of chars to be encoded in the string
+ * @return {number} The minimum amount of binary digits required to represent the input string
+ */
+function findMinBinDigits(input, numChars) {
+  let min = 0;
+  let inputArr = input.slice(0, numChars).split("")
+      .map(letter => letterToNum(letter))
+      .map(num => numToBin(num));
+
+  for (let i = 0; i < inputArr.length; i++) {
+    console.log("i=" + i + " inputArr[i]=" + inputArr[i] + " min=" + min);
+    if (inputArr[i].length > min) {
+      min = inputArr[i].length;
+    }
+  }
+  
+  return min;
+}
+
+/**
  * Convert the given input string into a binary string
  *
  * @param {string} input The string input to convert
@@ -316,6 +343,8 @@ function runUnitTests() {
     }
   }
   
+  
+
   // Test applyOffset()
   assertEquals("Shift the string 'yep' to the left by 1", applyOffset("yep", 1), "epy");
   assertEquals("Shift the string 'yep' to the right by 1", applyOffset("yep", -1), "pye");
@@ -334,8 +363,11 @@ function runUnitTests() {
   assertEquals("Pad '11' to 3 digits", padBinaryString("11", 3), "011");
   // Test appendChars()
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
+  // Test findMinBinDigits()
+  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input 'mighty'", findMinBinDigits("mighty", 8), 5);
   // Test convertToBinary()
   assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, 0, 0, "0", 3, true), "0000011000");
+  assertEquals("Convert the input 'mighty' to binary format, including padding", convertToBinary("mighty", 8, 7, 0, 0, "0", 3, true), "00011010000001001000000011100000010000000010100000001100100011111111111111111000");
 }
 
 //////////////////////////////////////////////////
@@ -440,6 +472,8 @@ function receiveKeyup(e, context) {
  * @return {string} The input value from the given context
  */
 function receiveInput(e, context) {
+  console.log(context.min);
+  console.log(context.max);
   return context.value;
 }
 
@@ -447,6 +481,11 @@ function receiveInput(e, context) {
  * Start the canvas rendering
  */
 function init() {
+  // Disable page refreshing on form submission
+  userFormElement.addEventListener("submit", function(event) {
+    event.preventDefault();
+  });
+
   // Add event listeners to user input fields
   userMessageElement.addEventListener("keyup", function(event) {
     receiveKeyup(event, this);
