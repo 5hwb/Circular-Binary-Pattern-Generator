@@ -431,27 +431,27 @@ function addRingFormEventListeners(ringNum) {
     event.preventDefault();
   });
   userMessageElement.addEventListener("keyup", function(event) {
-    receiveKeyup(event, this, msgRings[ringNum], userNumDigitsLabel, userNumDigitsElement);
+    getRingMsgValue(event, this, msgRings[ringNum], userNumDigitsLabel, userNumDigitsElement);
   }, true);
   userNumCharsElement.addEventListener("input", function(event) {
-    msgRings[ringNum].numOfMsgChars = receiveInput(event, this);
-    initExperiment();
+    msgRings[ringNum].numOfMsgChars = getInput(event, this);
+    initCanvas();
   }, true);
   userNumDigitsElement.addEventListener("input", function(event) {
-    msgRings[ringNum].numOfDigits = receiveInput(event, this);
-    initExperiment();
+    msgRings[ringNum].numOfDigits = getInput(event, this);
+    initCanvas();
   }, true);
   userPaddingLenElement.addEventListener("input", function(event) {
-    msgRings[ringNum].paddingLen = receiveInput(event, this);
-    initExperiment();
+    msgRings[ringNum].paddingLen = getInput(event, this);
+    initCanvas();
   }, true);
   userCharOffsetElement.addEventListener("input", function(event) {
-    msgRings[ringNum].charOffset = receiveInput(event, this);
-    initExperiment();
+    msgRings[ringNum].charOffset = getInput(event, this);
+    initCanvas();
   }, true);
   userDigitOffsetElement.addEventListener("input", function(event) {
-    msgRings[ringNum].digitOffset = receiveInput(event, this);
-    initExperiment();
+    msgRings[ringNum].digitOffset = getInput(event, this);
+    initCanvas();
   }, true);
 
   // Update user input fields
@@ -502,26 +502,26 @@ function addMainFormEventListeners() {
 
   // Add event listeners to user input fields
   userNumOfRingsElement.addEventListener("input", function(event) {
-    numOfMsgRings = parseInt(receiveInput(event, this));
-    initExperiment();
+    numOfMsgRings = parseInt(getInput(event, this));
+    initCanvas();
   }, true);
   userInnerRadiusElement.addEventListener("input", function(event) {
-    innerPatternRadius = parseInt(receiveInput(event, this));
+    innerPatternRadius = parseInt(getInput(event, this));
     console.log("innerPatternRadius = " + innerPatternRadius);
-    initExperiment();
+    initCanvas();
   }, true);
   userOuterRadiusElement.addEventListener("input", function(event) {
-    outerPatternRadius = parseInt(receiveInput(event, this));
+    outerPatternRadius = parseInt(getInput(event, this));
     console.log("outerPatternRadius = " + outerPatternRadius);
-    initExperiment();
+    initCanvas();
   }, true);
   userPatternColourElement.addEventListener("input", function(event) {
-    patternColour = receiveInput(event, this);
-    initExperiment();
+    patternColour = getInput(event, this);
+    initCanvas();
   }, true);
   userBackgroundColourElement.addEventListener("input", function(event) {
-    backgroundColour = receiveInput(event, this);
-    initExperiment();
+    backgroundColour = getInput(event, this);
+    initCanvas();
   }, true);
 
   // Update user input fields
@@ -543,7 +543,7 @@ function addMainFormEventListeners() {
 /**
  * Initialise the canvas element
  */
-function initExperiment() {
+function initCanvas() {
   
   // Add an event listener to the canvas element to detect mouse clicks
   const canvas = document.querySelector('canvas');
@@ -551,16 +551,16 @@ function initExperiment() {
     console.log(e.code);
     
     // Render a new frame
-    window.requestAnimationFrame(drawExperiment);
+    window.requestAnimationFrame(drawCanvas);
   });
   
-  window.requestAnimationFrame(drawExperiment);
+  window.requestAnimationFrame(drawCanvas);
 }
 
 /**
  * Render the canvas element
  */
-function drawExperiment() {
+function drawCanvas() {
   let c = document.getElementById("tutorial");
   
   if (c.getContext) {
@@ -624,7 +624,7 @@ function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
 
 /**
  * Set the ring message value from the input field.
- * (TODO: merge this with receiveInput()?)
+ * (TODO: merge this with getInput()?)
  * 
  * @param {KeyboardEvent} e Event data
  * @param {HTMLElement} context Target element
@@ -632,12 +632,12 @@ function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
  * @param {HTMLElement} numDigitsLabel HTML label for num of digits
  * @param {HTMLElement} numDigitsElement HTML input for num of digits
  */
-function receiveKeyup(e, context, msgRing, numDigitsLabel, numDigitsElement) {
+function getRingMsgValue(e, context, msgRing, numDigitsLabel, numDigitsElement) {
   console.log("=================");
   msgRing.ringMessage = context.value.toLowerCase();
 
   updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement);
-  initExperiment();
+  initCanvas();
 }
 
 /**
@@ -647,7 +647,7 @@ function receiveKeyup(e, context, msgRing, numDigitsLabel, numDigitsElement) {
  * @param {HTMLElement} context Target element
  * @return {string} The input value from the given context
  */
-function receiveInput(e, context) {
+function getInput(e, context) {
   console.log(context.min);
   console.log(context.max);
   return context.value;
@@ -660,5 +660,5 @@ function init() {
   generateForms(msgRings);
   addMainFormEventListeners();
   runUnitTests();
-  initExperiment();
+  initCanvas();
 }
