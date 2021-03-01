@@ -98,10 +98,10 @@ let innerPatternRadius = 75;
 let outerPatternRadius = 300;
 
 // Pattern colour
-let patternColour = "#ffffff";
+let patternColour = "#FF4700";
 
 // Background colour
-let backgroundColour = "#000000";
+let backgroundColour = "#ffffff";
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
