@@ -77,12 +77,12 @@ var msgRing3 = new MessageRing("things", 8, 7, 3, -2, 0);
 
 // User input fields
 var userFormElement = document.getElementById("form1");
-var userMessageElement = document.getElementById("user-string");
-var userNumCharsElement = document.getElementById("user-num-of-msg-chars");
-var userNumDigitsElement = document.getElementById("user-num-of-digits");
-var userPaddingLenElement = document.getElementById("user-padding-len");
-var userCharOffsetElement = document.getElementById("user-char-offset");
-var userDigitOffsetElement = document.getElementById("user-digit-offset");
+var userMessageElement = document.getElementById("ring1-string");
+var userNumCharsElement = document.getElementById("ring1-num-of-msg-chars");
+var userNumDigitsElement = document.getElementById("ring1-num-of-digits");
+var userPaddingLenElement = document.getElementById("ring1-padding-len");
+var userCharOffsetElement = document.getElementById("ring1-char-offset");
+var userDigitOffsetElement = document.getElementById("ring1-digit-offset");
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
