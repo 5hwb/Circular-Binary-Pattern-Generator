@@ -1,7 +1,7 @@
 /*
 NEXT TASKS:
+* Dynamically generate the forms from a list of MessageRing objects
 * Expand the Bootstrap form so that it can configure the other rings as well
-* Implement Bootstrap validation (so that binary num can't be set below a certain amount for example)
 * Add ability to add rings dynamically with size config (must add 2 new parameters to MessageRing: ring width and radius)
 * Offer 2 options: (1) Configure the message for each ring, or (2) let the message wrap around itself
 * Add frontend that can adapt to the above 2 states
@@ -50,15 +50,15 @@ class MessageRing {
 //////////////////////////////////////////////////
 
 // True = enable gridlines
-var isDebugging = true;
+let isDebugging = true;
 
 // True: Alphabet mode - each letter is encoded according to its order (A = 1, B = 2 etc)
 // False: ASCII/Unicode mode - each letter is encoded with its Unicode number
-var isLatinAlphabetMode = true;
+let isLatinAlphabetMode = true;
 
 // True: Message is spread across more than 1 ring automatically
 // False: Message is manually defined for each ring
-var isSpreadAcrossRings = false;
+let isSpreadAcrossRings = false;
 
 //////////////////////////////////////////////////
 // OTHER IMPORTANT VARIABLES
@@ -71,24 +71,11 @@ const KEY_ENTER = 13;
 const gridGap = 50;
 
 // The message to be encoded by the pattern
-var msgRing1 = new MessageRing("dare", 8, 7, 3, 0, 0);
-var msgRing2 = new MessageRing("mighty", 8, 7, 3, 4, 0);
-var msgRing3 = new MessageRing("things", 8, 7, 3, -2, 0);
-
-// User input fields
-var userFormElement = document.getElementById("form1");
-var userMessageElement = document.getElementById("ring1-string");
-var userNumCharsElement = document.getElementById("ring1-num-of-msg-chars");
-var userNumDigitsElement = document.getElementById("ring1-num-of-digits");
-var userCharOffsetElement = document.getElementById("ring1-char-offset");
-var userDigitOffsetElement = document.getElementById("ring1-digit-offset");
-var userPaddingLenElement = document.getElementById("ring1-padding-len");
-var userMessageLabel = document.getElementById("ring1-string-label");
-var userNumCharsLabel = document.getElementById("ring1-num-of-msg-chars-label");
-var userNumDigitsLabel = document.getElementById("ring1-num-of-digits-label");
-var userCharOffsetLabel = document.getElementById("ring1-char-offset-label");
-var userDigitOffsetLabel = document.getElementById("ring1-digit-offset-label");
-var userPaddingLenLabel = document.getElementById("ring1-padding-len-label");
+let msgRings = [
+  new MessageRing("dare", 8, 7, 3, 0, 0),
+  new MessageRing("mighty", 8, 7, 3, 4, 0),
+  new MessageRing("things", 8, 7, 3, -2, 0)
+];
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -104,10 +91,10 @@ var userPaddingLenLabel = document.getElementById("ring1-padding-len-label");
  */
 function drawGridLines(ctx, sizeX, sizeY) {
   // Print the X axis scales and gridlines
-  for (var i = 0; i < sizeX; i += 10) {
+  for (let i = 0; i < sizeX; i += 10) {
     ctx.strokeStyle = 'rgb(0, 0, 0)';
-    var isMajorInterval = i % gridGap == 0;
-    var lineSize = (isMajorInterval) ? 10 : 5;
+    let isMajorInterval = i % gridGap == 0;
+    let lineSize = (isMajorInterval) ? 10 : 5;
 
     // Scale lines
     ctx.beginPath();
@@ -128,10 +115,10 @@ function drawGridLines(ctx, sizeX, sizeY) {
   }
 
   // Print the Y axis scales and gridlines
-  for (var j = 0; j < sizeY; j += 10) {
+  for (let j = 0; j < sizeY; j += 10) {
     ctx.strokeStyle = 'rgb(0, 0, 0)';
-    var isMajorInterval = j % gridGap == 0;
-    var lineSize = (isMajorInterval) ? 10 : 5;
+    let isMajorInterval = j % gridGap == 0;
+    let lineSize = (isMajorInterval) ? 10 : 5;
 
     // Scale lines
     ctx.beginPath();
@@ -190,7 +177,7 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
   let numOfArcs = binaryMsg.length;
   let arcSize = 360 / numOfArcs;
 
-  for (var i = 0; i < numOfArcs; i += 1) {
+  for (let i = 0; i < numOfArcs; i += 1) {
     // If char is 1, draw an arc
     if (binaryMsg[i] == 1) {
       drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees));
@@ -376,135 +363,35 @@ function runUnitTests() {
 }
 
 //////////////////////////////////////////////////
-// BINARY CIRCULAR PATTERN GENERATOR SETUP
+// HTML TEMPLATE RENDERING FUNCTIONS
 //////////////////////////////////////////////////
 
 /**
- * Initialise the canvas element
- */
-function initExperiment() {
-  // Update user input fields
-  userMessageElement.value = msgRing2.ringMessage;
-  userNumCharsElement.value = msgRing2.numOfMsgChars;
-  userNumDigitsElement.value = msgRing2.numOfDigits;
-  userPaddingLenElement.value = msgRing2.paddingLen;
-  userCharOffsetElement.value = msgRing2.charOffset;
-  userDigitOffsetElement.value = msgRing2.digitOffset;
-  
-  // Add an event listener to the canvas element to detect mouse clicks
-  const canvas = document.querySelector('canvas');
-  canvas.addEventListener('keydown', function(e) {
-    console.log(e.code);
-    
-    // Render a new frame
-    window.requestAnimationFrame(drawExperiment);
-  });
-  
-  window.requestAnimationFrame(drawExperiment);
-}
-
-/**
- * Render the canvas element
- */
-function drawExperiment() {
-  var c = document.getElementById("tutorial");
-  
-  var sizeX = 600;
-  var sizeY = 600;
-  var time = new Date();
-  
-  if (c.getContext) {
-    var ctx = c.getContext("2d");
-    
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
-
-    // Sample binary messages
-    // var binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
-    //               + "0001010000" + "1111111111" + "1111111111" + "1111111000";
-
-    var binaryMsg1 = msgRing1.getBinaryMessage();
-    console.log(binaryMsg1);
-    var binaryMsg2 = msgRing2.getBinaryMessage();
-    console.log(binaryMsg2);
-    var binaryMsg3 = msgRing3.getBinaryMessage();
-    console.log(binaryMsg3);
-        
-    // Arcs to represent the pattern
-    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg1, 0.3);
-    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg2, 0.3);
-    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg3, 0.3);
-    
-    // Circle base
-    ctx.beginPath();
-    ctx.arc(300, 300, 300, 0, Math.PI * 2, false);
-    ctx.fillStyle = 'rgb(100, 0, 0)';
-    ctx.fill();
-
-    if (isDebugging) {
-      drawGridLines(ctx, sizeX, sizeY);
-    }
-    
-    // Draw a 'wood colour' background
-    ctx.fillStyle = '#DDB06D';
-    ctx.fillRect(0, 0, sizeX, sizeY);
-    
-  } else {
-    // canvas-unsupported code here
-    console.log("CANVAS NOT SUPPORTED!");
-  }
-}
-
-/**
- * Update the minimum number of digits of a MessageRing, based on the current message string.
+ * Generate the nav tab HTML elements for the MessageRing form with the given number ID 
  * 
- * @param {MessageRing} msgRing The MessageRing to update
- * @param {HTMLElement} numDigitsLabel HTML label for num of digits
- * @param {HTMLElement} numDigitsElement HTML input for num of digits
+ * @param {number} ringNum Number of the MessageRing
+ * @return {string} Fully-formed nav tab HTML string
  */
-function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
-  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage);
-
-  // Update the label string
-  numDigitsLabel.textContent = "Number of binary digits per char (minimum " + msgRing.minNumOfDigits + ")";
-  numDigitsElement.min = msgRing.minNumOfDigits;
-
-  // If the set number of digits is less than the required number of digits,
-  // update this value
-  if (numDigitsElement.value < msgRing2.minNumOfDigits) {
-    numDigitsElement.value = msgRing2.minNumOfDigits;
-    msgRing2.numOfDigits = msgRing2.minNumOfDigits;
-  }
-
-  console.log(msgRing2);
-}
-
-/**
- * Get all input keypresses
- * 
- * @param {object} e Event data
- * @param {object} context Target element
- */
-function receiveKeyup(e, context) {
-  console.log("=================");
-  msgRing2.ringMessage = context.value.toLowerCase();
-
-  updateMinNumOfDigits(msgRing2, userNumDigitsLabel, userNumDigitsElement);
-
-  // Experiment with direct HTML manipulation to insert new forms for each ring (in the future)
-  let ringNum = 5;
-  let navTabsElement = document.getElementById("myTab");
-  let tabContentsElement = document.getElementById("myTabContent");
-  let navTabTemplate = `
+function getNavTabTemplate(ringNum) {
+  return `
   <li class="nav-item" role="presentation">
   <button class="nav-link" id="ring${ringNum}-tab" data-bs-toggle="tab" data-bs-target="#ring${ringNum}" type="button" role="tab" aria-controls="ring${ringNum}" aria-selected="false">Ring ${ringNum}</button>
   </li>`;
-  let tabContentTemplate = `
+}
+
+/**
+ * Generate the tab content HTML elements for the MessageRing form with the given number ID 
+ * 
+ * @param {number} ringNum Number of the MessageRing
+ * @return {string} Fully-formed tab content string
+ */
+function getTabContentTemplate(ringNum) {
+  return `
   <div class="tab-pane fade" id="ring${ringNum}" role="tabpanel" aria-labelledby="ring${ringNum}-tab">
     <div class="row g-3">
       <div class="col-md-12 col-lg-12">
         <h4 class="mb-3">Ring ${ringNum} configuration</h4>
-        <form class="needs-validation was-validated" id="form1" novalidate>
+        <form class="needs-validation was-validated" id="ring${ringNum}" novalidate>
           <div class="row g-3">
             
             <div class="col-12">
@@ -551,16 +438,201 @@ function receiveKeyup(e, context) {
     </div>
   </div>
   `;
+}
 
-  navTabsElement.insertAdjacentHTML("beforeend", navTabTemplate);
-  tabContentsElement.insertAdjacentHTML("beforeend", tabContentTemplate);
+/**
+ * Generate forms dynamically from an array of MessageRing instances
+ * 
+ * @param {MessageRing[]} msgRings Array of MessageRing instances
+ */
+function generateForms(msgRings) {
+  for (let i = 0; i < msgRings.length; i++) {
+    let ringNum = i;
+    
+    // Get tab elements
+    let navTabsElement = document.getElementById("myTab");
+    let tabContentsElement = document.getElementById("myTabContent");
 
+    // Fill in the templates
+    let navTabTemplate = getNavTabTemplate(ringNum);
+    let tabContentTemplate = getTabContentTemplate(ringNum);
 
+    // Insert completed templates to the tab elements
+    navTabsElement.insertAdjacentHTML("beforeend", navTabTemplate);
+    tabContentsElement.insertAdjacentHTML("beforeend", tabContentTemplate);
+
+    // Get the user input fields
+    let userFormElement = document.getElementById(`ring${ringNum}`);
+    let userMessageElement = document.getElementById(`ring${ringNum}-string`);
+    let userNumCharsElement = document.getElementById(`ring${ringNum}-num-of-msg-chars`);
+    let userNumDigitsElement = document.getElementById(`ring${ringNum}-num-of-digits`);
+    let userCharOffsetElement = document.getElementById(`ring${ringNum}-char-offset`);
+    let userDigitOffsetElement = document.getElementById(`ring${ringNum}-digit-offset`);
+    let userPaddingLenElement = document.getElementById(`ring${ringNum}-padding-len`);
+    let userMessageLabel = document.getElementById(`ring${ringNum}-string-label`);
+    let userNumCharsLabel = document.getElementById(`ring${ringNum}-num-of-msg-chars-label`);
+    let userNumDigitsLabel = document.getElementById(`ring${ringNum}-num-of-digits-label`);
+    let userCharOffsetLabel = document.getElementById(`ring${ringNum}-char-offset-label`);
+    let userDigitOffsetLabel = document.getElementById(`ring${ringNum}-digit-offset-label`);
+    let userPaddingLenLabel = document.getElementById(`ring${ringNum}-padding-len-label`);
+
+    // Add event listeners to user input fields
+    userFormElement.addEventListener("submit", function(event) {
+      // Disable page refreshing on form submission
+      event.preventDefault();
+    });
+    userMessageElement.addEventListener("keyup", function(event) {
+      receiveKeyup(event, this, msgRings[i], userNumDigitsLabel, userNumDigitsElement);
+    }, true);
+    userNumCharsElement.addEventListener("input", function(event) {
+      msgRings[i].numOfMsgChars = receiveInput(event, this);
+      initExperiment();
+    }, true);
+    userNumDigitsElement.addEventListener("input", function(event) {
+      msgRings[i].numOfDigits = receiveInput(event, this);
+      initExperiment();
+    }, true);
+    userPaddingLenElement.addEventListener("input", function(event) {
+      msgRings[i].paddingLen = receiveInput(event, this);
+      initExperiment();
+    }, true);
+    userCharOffsetElement.addEventListener("input", function(event) {
+      msgRings[i].charOffset = receiveInput(event, this);
+      initExperiment();
+    }, true);
+    userDigitOffsetElement.addEventListener("input", function(event) {
+      msgRings[i].digitOffset = receiveInput(event, this);
+      initExperiment();
+    }, true);
+
+    // Update user input fields
+    userMessageElement.value = msgRings[i].ringMessage;
+    userNumCharsElement.value = msgRings[i].numOfMsgChars;
+    userNumDigitsElement.value = msgRings[i].numOfDigits;
+    userPaddingLenElement.value = msgRings[i].paddingLen;
+    userCharOffsetElement.value = msgRings[i].charOffset;
+    userDigitOffsetElement.value = msgRings[i].digitOffset;
+  }
+
+}
+
+//////////////////////////////////////////////////
+// CIRCULAR BINARY PATTERN GENERATOR SETUP
+//////////////////////////////////////////////////
+
+/**
+ * Initialise the canvas element
+ */
+function initExperiment() {
+  
+  // Add an event listener to the canvas element to detect mouse clicks
+  const canvas = document.querySelector('canvas');
+  canvas.addEventListener('keydown', function(e) {
+    console.log(e.code);
+    
+    // Render a new frame
+    window.requestAnimationFrame(drawExperiment);
+  });
+  
+  window.requestAnimationFrame(drawExperiment);
+}
+
+/**
+ * Render the canvas element
+ */
+function drawExperiment() {
+  let c = document.getElementById("tutorial");
+  
+  let sizeX = 600;
+  let sizeY = 600;
+  let time = new Date();
+  
+  if (c.getContext) {
+    let ctx = c.getContext("2d");
+    
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
+
+    // Sample binary messages
+    // let binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
+    //               + "0001010000" + "1111111111" + "1111111111" + "1111111000";
+
+    let binaryMsg1 = msgRings[0].getBinaryMessage();
+    console.log(binaryMsg1);
+    let binaryMsg2 = msgRings[1].getBinaryMessage();
+    console.log(binaryMsg2);
+    let binaryMsg3 = msgRings[2].getBinaryMessage();
+    console.log(binaryMsg3);
+        
+    // Arcs to represent the pattern
+    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg1, 0.3);
+    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg2, 0.3);
+    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg3, 0.3);
+    
+    // Circle base
+    ctx.beginPath();
+    ctx.arc(300, 300, 300, 0, Math.PI * 2, false);
+    ctx.fillStyle = 'rgb(100, 0, 0)';
+    ctx.fill();
+
+    if (isDebugging) {
+      drawGridLines(ctx, sizeX, sizeY);
+    }
+    
+    // Draw a 'wood colour' background
+    ctx.fillStyle = '#DDB06D';
+    ctx.fillRect(0, 0, sizeX, sizeY);
+    
+  } else {
+    // canvas-unsupported code here
+    console.log("CANVAS NOT SUPPORTED!");
+  }
+}
+
+/**
+ * Update the minimum number of digits of a MessageRing, based on the current message string.
+ * 
+ * @param {MessageRing} msgRing The MessageRing to update
+ * @param {HTMLElement} numDigitsLabel HTML label for num of digits
+ * @param {HTMLElement} numDigitsElement HTML input for num of digits
+ */
+function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
+  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage);
+
+  // Update the label string
+  numDigitsLabel.textContent = "Number of binary digits per char (minimum " + msgRing.minNumOfDigits + ")";
+  numDigitsElement.min = msgRing.minNumOfDigits;
+
+  // If the set number of digits is less than the required number of digits,
+  // update this value
+  if (numDigitsElement.value < msgRing.minNumOfDigits) {
+    numDigitsElement.value = msgRing.minNumOfDigits;
+    msgRing.numOfDigits = msgRing.minNumOfDigits;
+  }
+
+  console.log(msgRing);
+}
+
+/**
+ * Set the ring message value from the input field.
+ * (TODO: merge this with receiveInput()?)
+ * 
+ * @param {object} e Event data
+ * @param {object} context Target element
+ * @param {MessageRing} msgRing The MessageRing to update
+ * @param {HTMLElement} numDigitsLabel HTML label for num of digits
+ * @param {HTMLElement} numDigitsElement HTML input for num of digits
+ */
+function receiveKeyup(e, context, msgRing, numDigitsLabel, numDigitsElement) {
+  console.log("=================");
+  msgRing.ringMessage = context.value.toLowerCase();
+
+  updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement);
   initExperiment();
 }
 
 /**
- * Get all input keypresses
+ * Get the value from the input field
  * 
  * @param {object} e Event data
  * @param {object} context Target element
@@ -576,35 +648,7 @@ function receiveInput(e, context) {
  * Start the canvas rendering
  */
 function init() {
-  // Disable page refreshing on form submission
-  userFormElement.addEventListener("submit", function(event) {
-    event.preventDefault();
-  });
-
-  // Add event listeners to user input fields
-  userMessageElement.addEventListener("keyup", function(event) {
-    receiveKeyup(event, this);
-  }, true);
-  userNumCharsElement.addEventListener("input", function(event) {
-    msgRing2.numOfMsgChars = receiveInput(event, this);
-    initExperiment();
-  }, true);
-  userNumDigitsElement.addEventListener("input", function(event) {
-    msgRing2.numOfDigits = receiveInput(event, this);
-    initExperiment();
-  }, true);
-  userPaddingLenElement.addEventListener("input", function(event) {
-    msgRing2.paddingLen = receiveInput(event, this);
-    initExperiment();
-  }, true);
-  userCharOffsetElement.addEventListener("input", function(event) {
-    msgRing2.charOffset = receiveInput(event, this);
-    initExperiment();
-  }, true);
-  userDigitOffsetElement.addEventListener("input", function(event) {
-    msgRing2.digitOffset = receiveInput(event, this);
-    initExperiment();
-  }, true);
+  generateForms(msgRings);
   
   runUnitTests();
   initExperiment();
