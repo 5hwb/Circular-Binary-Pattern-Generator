@@ -563,10 +563,22 @@ function generateForms(msgRings) {
  */
 function addMainFormEventListeners() {
   // Get the user input fields
+  let userInnerRadiusElement = document.getElementById(`patgen-inner-radius`);
+  let userOuterRadiusElement = document.getElementById(`patgen-outer-radius`);
   let userPatternColourElement = document.getElementById(`patgen-pattern-colour`);
   let userBackgroundColourElement = document.getElementById(`patgen-background-colour`);
 
   // Add event listeners to user input fields
+  userInnerRadiusElement.addEventListener("input", function(event) {
+    innerPatternRadius = parseInt(receiveInput(event, this));
+    console.log("innerPatternRadius = " + innerPatternRadius);
+    initExperiment();
+  }, true);
+  userOuterRadiusElement.addEventListener("input", function(event) {
+    outerPatternRadius = parseInt(receiveInput(event, this));
+    console.log("outerPatternRadius = " + outerPatternRadius);
+    initExperiment();
+  }, true);
   userPatternColourElement.addEventListener("input", function(event) {
     patternColour = receiveInput(event, this);
     initExperiment();
@@ -577,6 +589,8 @@ function addMainFormEventListeners() {
   }, true);
 
   // Update user input fields
+  userInnerRadiusElement.value = parseInt(innerPatternRadius);
+  userOuterRadiusElement.value = parseInt(outerPatternRadius);
   userPatternColourElement.value = patternColour;
   userBackgroundColourElement.value = backgroundColour;
 }
