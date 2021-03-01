@@ -80,9 +80,15 @@ var userFormElement = document.getElementById("form1");
 var userMessageElement = document.getElementById("ring1-string");
 var userNumCharsElement = document.getElementById("ring1-num-of-msg-chars");
 var userNumDigitsElement = document.getElementById("ring1-num-of-digits");
-var userPaddingLenElement = document.getElementById("ring1-padding-len");
 var userCharOffsetElement = document.getElementById("ring1-char-offset");
 var userDigitOffsetElement = document.getElementById("ring1-digit-offset");
+var userPaddingLenElement = document.getElementById("ring1-padding-len");
+var userMessageLabel = document.getElementById("ring1-string-label");
+var userNumCharsLabel = document.getElementById("ring1-num-of-msg-chars-label");
+var userNumDigitsLabel = document.getElementById("ring1-num-of-digits-label");
+var userCharOffsetLabel = document.getElementById("ring1-char-offset-label");
+var userDigitOffsetLabel = document.getElementById("ring1-digit-offset-label");
+var userPaddingLenLabel = document.getElementById("ring1-padding-len-label");
 
 //////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
@@ -266,17 +272,16 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
  * Get the minimum amount of binary digits required to represent a message string
  * 
  * @param {string} input The string input to examine
- * @param {number} numChars The desired number of chars to be encoded in the string
  * @return {number} The minimum amount of binary digits required to represent the input string
  */
-function findMinBinDigits(input, numChars) {
+function findMinBinDigits(input) {
   let min = 0;
-  let inputArr = input.slice(0, numChars).split("")
+  let inputArr = input.split("")
       .map(letter => letterToNum(letter))
       .map(num => numToBin(num));
 
   for (let i = 0; i < inputArr.length; i++) {
-    console.log("i=" + i + " inputArr[i]=" + inputArr[i] + " min=" + min);
+    //console.log("i=" + i + " inputArr[i]=" + inputArr[i] + " min=" + min);
     if (inputArr[i].length > min) {
       min = inputArr[i].length;
     }
@@ -364,7 +369,7 @@ function runUnitTests() {
   // Test appendChars()
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
   // Test findMinBinDigits()
-  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input 'mighty'", findMinBinDigits("mighty", 8), 5);
+  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input 'mighty'", findMinBinDigits("mighty"), 5);
   // Test convertToBinary()
   assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, 0, 0, "0", 3, true), "0000011000");
   assertEquals("Convert the input 'mighty' to binary format, including padding", convertToBinary("mighty", 8, 7, 0, 0, "0", 3, true), "00011010000001001000000011100000010000000010100000001100100011111111111111111000");
@@ -451,6 +456,30 @@ function drawExperiment() {
 }
 
 /**
+ * Update the minimum number of digits of a MessageRing, based on the current message string.
+ * 
+ * @param {MessageRing} msgRing The MessageRing to update
+ * @param {HTMLElement} numDigitsLabel HTML label for num of digits
+ * @param {HTMLElement} numDigitsElement HTML input for num of digits
+ */
+function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
+  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage);
+
+  // Update the label string
+  numDigitsLabel.textContent = "Number of binary digits per char (minimum " + msgRing.minNumOfDigits + ")";
+  numDigitsElement.min = msgRing.minNumOfDigits;
+
+  // If the set number of digits is less than the required number of digits,
+  // update this value
+  if (numDigitsElement.value < msgRing2.minNumOfDigits) {
+    numDigitsElement.value = msgRing2.minNumOfDigits;
+    msgRing2.numOfDigits = msgRing2.minNumOfDigits;
+  }
+
+  console.log(msgRing2);
+}
+
+/**
  * Get all input keypresses
  * 
  * @param {object} e Event data
@@ -459,7 +488,8 @@ function drawExperiment() {
 function receiveKeyup(e, context) {
   console.log("=================");
   msgRing2.ringMessage = context.value.toLowerCase();
-  console.log(msgRing2.ringMessage);
+
+  updateMinNumOfDigits(msgRing2, userNumDigitsLabel, userNumDigitsElement);
 
   initExperiment();
 }
