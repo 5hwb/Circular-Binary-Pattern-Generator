@@ -76,9 +76,9 @@ let isSpreadAcrossRings = false;
 let sizeX = 600;
 let sizeY = 600;
 
-// Ring margins
-let innerRingMargin = 0.25;
-let outerRingMargin = 1.0;
+// Pattern margin percentages
+let innerMarginPercent = 0.25;
+let outerMarginPercent = 1.0;
 
 // Pattern colour
 let patternColour = "#ffffff";
@@ -95,6 +95,10 @@ let msgRings = [
   new MessageRing("mighty", 8, 7, 3, 4, 0),
   new MessageRing("things", 8, 7, 3, -2, 0)
 ];
+
+// Overlap parameters (to minimise artifacts)
+let arcOverlap = 0.3;
+let ringOverlap = 0.7;
 
 //////////////////////////////////////////////////
 // OTHER IMPORTANT VARIABLES
@@ -612,24 +616,29 @@ function drawExperiment() {
     
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
-        
-    // Render the message rings to form the pattern
-    let innerPatternRadius = 300*innerRingMargin;
-    let outerPatternRadius = 300*outerRingMargin;
+
+    // Circle pattern dimensions
+    let patternRadius = sizeX / 2;
+    let innerPatternRadius = patternRadius * innerMarginPercent;
+    let outerPatternRadius = patternRadius * outerMarginPercent;
     let patternWidth = outerPatternRadius - innerPatternRadius;
+
+    // Render the message rings to form the pattern
     msgRings.forEach(function(msgRing, i) {
       let binaryMsg = msgRing.getBinaryMessage();
-      console.log(binaryMsg);
+      //console.log(binaryMsg);
+
+      let actualRingOverlap = (i == msgRings.length - 1) ? 0 : ringOverlap;
   
-      drawBinaryRing(ctx, 300, 300, 
-          innerPatternRadius + (patternWidth*i/3), 
-          innerPatternRadius + (patternWidth*(i+1)/3) + 0.7, 
-          binaryMsg, 0.3);
+      drawBinaryRing(ctx, patternRadius, patternRadius, 
+          innerPatternRadius + (patternWidth*i / numOfMsgRings), 
+          innerPatternRadius + (patternWidth*(i+1) / numOfMsgRings) + actualRingOverlap, 
+          binaryMsg, arcOverlap);
     });
     
     // Render the base
     ctx.beginPath();
-    ctx.arc(300, 300, 300, 0, Math.PI * 2, false);
+    ctx.arc(sizeX / 2, sizeY / 2, patternRadius, 0, Math.PI * 2, false);
     ctx.fillStyle = backgroundColour;
     ctx.fill();
 
