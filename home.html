@@ -44,7 +44,7 @@
               <div class="row g-3">
                 
                 <div class="col-12">
-                  <label for="user-string" class="form-label">Ring message</label>
+                  <label for="user-string" class="form-label" id="user-string-label">Ring message</label>
                   <input type="text" class="form-control" id="user-string" placeholder="" required>
                   <div class="invalid-feedback">
                     Ring message is required.
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="user-num-of-msg-chars" class="form-label">Message length (number of characters)</label>
+                  <label for="user-num-of-msg-chars" class="form-label" id="user-num-of-msg-chars-label">Message length (number of characters)</label>
                   <input type="number" class="form-control" id="user-num-of-msg-chars" placeholder="" value="" min="0" required>
                   <div class="invalid-feedback">
                     Message length cannot be excluded.
@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                  <label for="user-num-of-digits" class="form-label">Number of binary digits per char</label>
+                  <label for="user-num-of-digits" class="form-label" id="user-num-of-digits-label">Number of binary digits per char</label>
                   <input type="number" class="form-control" id="user-num-of-digits" placeholder="" value="" min="0" required>
                   <div class="invalid-feedback">
                     Number of binary digits cannot be excluded.
@@ -68,17 +68,17 @@
                 </div>
 
                 <div class="col-sm-4">
-                  <label for="user-char-offset" class="form-label">Character offset</label>
+                  <label for="user-char-offset" class="form-label" id="user-char-offset-label">Character offset</label>
                   <input type="number" class="form-control" id="user-char-offset" placeholder="" value="">
                 </div>
 
                 <div class="col-sm-4">
-                  <label for="user-digit-offset" class="form-label">Binary digit offset</label>
+                  <label for="user-digit-offset" class="form-label" id="user-digit-offset-label">Binary digit offset</label>
                   <input type="number" class="form-control" id="user-digit-offset" placeholder="" value="">
                 </div>
 
                 <div class="col-sm-4">
-                  <label for="user-padding-len" class="form-label">Padding length</label>
+                  <label for="user-padding-len" class="form-label" id="user-padding-len-label">Padding length</label>
                   <input type="number" class="form-control" id="user-padding-len" placeholder="" value="" min="0">
                 </div>
               </div>
