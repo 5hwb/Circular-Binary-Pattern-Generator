@@ -39,7 +39,7 @@ class MessageRing {
    * @return A new MessageRing instance
    */
   static createEmptyInstance() {
-    return new MessageRing("", 1, 5, 2, 0, 0);
+    return new MessageRing("", 8, 7, 3, 0, 0);
   }
   
   /**
@@ -76,7 +76,10 @@ let sizeY = 600;
 let numOfMsgRings = 3;
 
 // List of MessageRing instances
-let msgRings = [
+let msgRings = [];
+
+// Default MessageRing instances representing the first 3 rings of the Perseverance rover parachute pattern
+const perseveranceParachuteMsgRings = [
   new MessageRing("dare", 8, 7, 3, 0, 0),
   new MessageRing("mighty", 8, 7, 3, 4, 0),
   new MessageRing("things", 8, 7, 3, -2, 0)
@@ -469,13 +472,21 @@ function addRingFormEventListeners(ringNum) {
  * @param {MessageRing[]} msgRings Array of MessageRing instances
  */
 function generateForms(msgRings) {
+  // Get tab elements
+  let navTabsElement = document.getElementById("myTab");
+  let tabContentsElement = document.getElementById("myTabContent");
+  
+  // Clear tab element contents
+  while (navTabsElement.hasChildNodes()) {
+    navTabsElement.removeChild(navTabsElement.lastChild);
+  }
+  while (tabContentsElement.hasChildNodes()) {
+    tabContentsElement.removeChild(tabContentsElement.lastChild);
+  }
+
   for (let i = 0; i < msgRings.length; i++) {
     let ringNum = i;
     
-    // Get tab elements
-    let navTabsElement = document.getElementById("myTab");
-    let tabContentsElement = document.getElementById("myTabContent");
-
     // Fill in the templates
     let navTabTemplate = getNavTabTemplate(ringNum);
     let tabContentTemplate = getTabContentTemplate(ringNum);
@@ -503,6 +514,13 @@ function addMainFormEventListeners() {
   // Add event listeners to user input fields
   userNumOfRingsElement.addEventListener("input", function(event) {
     numOfMsgRings = parseInt(getInput(event, this));
+
+    msgRings = [];
+    for (let i = 0; i < numOfMsgRings; i++) {
+      msgRings.push(MessageRing.createEmptyInstance());
+    }
+
+    generateForms(msgRings);
     initCanvas();
   }, true);
   userInnerRadiusElement.addEventListener("input", function(event) {
@@ -544,7 +562,7 @@ function addMainFormEventListeners() {
  * Initialise the canvas element
  */
 function initCanvas() {
-  
+
   // Add an event listener to the canvas element to detect mouse clicks
   const canvas = document.querySelector('canvas');
   canvas.addEventListener('keydown', function(e) {
