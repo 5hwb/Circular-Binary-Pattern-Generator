@@ -65,6 +65,17 @@ let isLatinAlphabetMode = true;
 let isSpreadAcrossRings = false;
 
 //////////////////////////////////////////////////
+// PATTERN GENERATOR CONSTANTS
+//////////////////////////////////////////////////
+
+// Default MessageRing instances representing the first 3 rings of the Perseverance rover parachute pattern
+const perseveranceParachuteMsgRings = [
+  new MessageRing("dare", 8, 7, 3, 0, 0),
+  new MessageRing("mighty", 8, 7, 3, 4, 0),
+  new MessageRing("things", 8, 7, 3, -2, 0)
+];
+
+//////////////////////////////////////////////////
 // PATTERN GENERATOR PARAMETERS
 //////////////////////////////////////////////////
 
@@ -76,14 +87,7 @@ let sizeY = 600;
 let numOfMsgRings = 3;
 
 // List of MessageRing instances
-let msgRings = [];
-
-// Default MessageRing instances representing the first 3 rings of the Perseverance rover parachute pattern
-const perseveranceParachuteMsgRings = [
-  new MessageRing("dare", 8, 7, 3, 0, 0),
-  new MessageRing("mighty", 8, 7, 3, 4, 0),
-  new MessageRing("things", 8, 7, 3, -2, 0)
-];
+let msgRings = perseveranceParachuteMsgRings;
 
 // Overlap parameters (to minimise artifacts)
 let arcOverlap = 0.3;
