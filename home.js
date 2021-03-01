@@ -72,6 +72,14 @@ let isSpreadAcrossRings = false;
 // PATTERN GENERATOR PARAMETERS
 //////////////////////////////////////////////////
 
+// Canvas dimensions
+let sizeX = 600;
+let sizeY = 600;
+
+// Ring margins
+let innerRingMargin = 0.25;
+let outerRingMargin = 1.0;
+
 // Pattern colour
 let patternColour = "#ffffff";
 
@@ -599,32 +607,27 @@ function initExperiment() {
 function drawExperiment() {
   let c = document.getElementById("tutorial");
   
-  let sizeX = 600;
-  let sizeY = 600;
-  
   if (c.getContext) {
     let ctx = c.getContext("2d");
     
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, sizeX, sizeY); // clear canvas
-
-    // Sample binary messages
-    // let binaryMsg = "0100110000" + "0010111000" + "0000111000" + "0011010000"
-    //               + "0001010000" + "1111111111" + "1111111111" + "1111111000";
-
-    let binaryMsg1 = msgRings[0].getBinaryMessage();
-    console.log(binaryMsg1);
-    let binaryMsg2 = msgRings[1].getBinaryMessage();
-    console.log(binaryMsg2);
-    let binaryMsg3 = msgRings[2].getBinaryMessage();
-    console.log(binaryMsg3);
         
-    // Arcs to represent the pattern
-    drawBinaryRing(ctx, 300, 300, 60, 60+60.7, binaryMsg1, 0.3);
-    drawBinaryRing(ctx, 300, 300, 120, 120+60.7, binaryMsg2, 0.3);
-    drawBinaryRing(ctx, 300, 300, 180, 180+60.7, binaryMsg3, 0.3);
+    // Render the message rings to form the pattern
+    let innerPatternRadius = 300*innerRingMargin;
+    let outerPatternRadius = 300*outerRingMargin;
+    let patternWidth = outerPatternRadius - innerPatternRadius;
+    msgRings.forEach(function(msgRing, i) {
+      let binaryMsg = msgRing.getBinaryMessage();
+      console.log(binaryMsg);
+  
+      drawBinaryRing(ctx, 300, 300, 
+          innerPatternRadius + (patternWidth*i/3), 
+          innerPatternRadius + (patternWidth*(i+1)/3) + 0.7, 
+          binaryMsg, 0.3);
+    });
     
-    // Circle base
+    // Render the base
     ctx.beginPath();
     ctx.arc(300, 300, 300, 0, Math.PI * 2, false);
     ctx.fillStyle = backgroundColour;
@@ -633,10 +636,6 @@ function drawExperiment() {
     if (isDebugging) {
       drawGridLines(ctx, sizeX, sizeY);
     }
-    
-    // Draw a 'wood colour' background
-    ctx.fillStyle = '#DDB06D';
-    ctx.fillRect(0, 0, sizeX, sizeY);
     
   } else {
     // canvas-unsupported code here
