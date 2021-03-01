@@ -97,76 +97,8 @@ let patternColour = "#ffffff";
 let backgroundColour = "#000000";
 
 //////////////////////////////////////////////////
-// OTHER IMPORTANT VARIABLES
-//////////////////////////////////////////////////
-
-// Keycode for the 'Enter' key
-const KEY_ENTER = 13; 
-
-// Gap between grid lines
-const gridGap = 50;
-
-//////////////////////////////////////////////////
 // CANVAS SHAPE RENDERING FUNCTIONS
 //////////////////////////////////////////////////
-
-/**
- * Draw grid lines and ruler markings across the canvas element.
- * For debugging only
- *
- * @param {CanvasRenderingContext2D} ctx Context of the canvas element to draw on
- * @param {number} sizeX X-dimensions of grid line markings
- * @param {number} sizeY Y-dimensions of grid line markings
- */
-function drawGridLines(ctx, sizeX, sizeY) {
-  // Print the X axis scales and gridlines
-  for (let i = 0; i < sizeX; i += 10) {
-    ctx.strokeStyle = 'rgb(0, 0, 0)';
-    let isMajorInterval = i % gridGap == 0;
-    let lineSize = (isMajorInterval) ? 10 : 5;
-
-    // Scale lines
-    ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i, lineSize);
-    ctx.closePath();
-    ctx.stroke();
-
-    // Gridlines
-    if (isMajorInterval) {
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, sizeY);
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-
-  // Print the Y axis scales and gridlines
-  for (let j = 0; j < sizeY; j += 10) {
-    ctx.strokeStyle = 'rgb(0, 0, 0)';
-    let isMajorInterval = j % gridGap == 0;
-    let lineSize = (isMajorInterval) ? 10 : 5;
-
-    // Scale lines
-    ctx.beginPath();
-    ctx.moveTo(0, j);
-    ctx.lineTo(lineSize, j);
-    ctx.closePath();
-    ctx.stroke();
-
-    // Gridlines
-    if (isMajorInterval) {
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.beginPath();
-      ctx.moveTo(0, j);
-      ctx.lineTo(sizeX, j);
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-}
 
 /**
  * Render an arc to the given canvas context
