@@ -15,14 +15,16 @@ class MessageRing {
    *
    * @author: 5hwb (Perry Hartono)
    * @param {string} ringMessage The ring message to encode
+   * @param {boolean} isUnicode True = represents a Unicode string. False = represents a Latin alphabet string
    * @param {number} numOfMsgChars The number of message characters to encode in the pattern
    * @param {number} numOfDigits The desired number of binary digits for each character
    * @param {number} paddingLen Length of additional padding between encoded characters
    * @param {number} charOffset Amount of chars to shift the ring by
    * @param {number} digitOffset Amount of binary digits to shift the ring by
    */
-  constructor(ringMessage, numOfMsgChars, numOfDigits, paddingLen, charOffset, digitOffset) {
+  constructor(ringMessage, isUnicode, numOfMsgChars, numOfDigits, paddingLen, charOffset, digitOffset) {
     this.ringMessage = ringMessage;
+    this.isUnicode = isUnicode;
     this.numOfMsgChars = numOfMsgChars;
     this.numOfDigits = numOfDigits;
     this.paddingLen = paddingLen;
@@ -34,13 +36,13 @@ class MessageRing {
   }
 
   /**
-   * Create an 'empty' MessageRing instance with 8 characters, 7 binary digits for each char,
+   * Create an 'empty' MessageRing instance with 8 Latin characters, 7 binary digits for each char,
    * a padding length of 3 and no offsets.
    * 
    * @return A new MessageRing instance
    */
   static createEmptyInstance() {
-    return new MessageRing("", 8, 7, 3, 0, 0);
+    return new MessageRing("", false, 8, 7, 3, 0, 0);
   }
   
   /**
@@ -49,8 +51,8 @@ class MessageRing {
    * @return The binary string representation of this MessageRing
    */
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.charOffset, 
-                           this.digitOffset, "0", this.paddingLen, true);
+    return convertToBinary(this.ringMessage, this.isUnicode, this.numOfMsgChars, this.numOfDigits,
+                           this.charOffset, this.digitOffset, "0", this.paddingLen, true);
   }
 }
 
@@ -73,9 +75,9 @@ let isSpreadAcrossRings = false;
 // Default MessageRing instances representing the first 3 rings of the Perseverance rover
 // parachute pattern
 const perseveranceParachuteMsgRings = [
-  new MessageRing("dare", 8, 7, 3, 0, 0),
-  new MessageRing("mighty", 8, 7, 3, 4, 0),
-  new MessageRing("things", 8, 7, 3, -2, 0)
+  new MessageRing("dare", false, 8, 7, 3, 0, 0),
+  new MessageRing("mighty", false, 8, 7, 3, 4, 0),
+  new MessageRing("things", false, 8, 7, 3, -2, 0)
 ];
 
 //////////////////////////////////////////////////
@@ -175,23 +177,38 @@ function applyOffset(arr, num) {
 }
 
 /**
- * Convert a Latin alphabet letter into its corresponding number in the
- * Latin alphabet order (A, B, C etc)
+ * Convert a letter into a number - this can either be its order in the alphabet or its Unicode codepoint
  *
  * @param {string} letter A 1-char string
+ * @param {boolean} parseAsUnicode 
+ *     True = parse this letter as a Unicode character.
+ *     False = parse a Latin alphabet letter into its corresponding number in the Latin alphabet
+ *     order (A, B, C etc)
  * @return {number} Corresponding number in Latin alphabet order
  */
-function letterToNum(letter) {
+function letterToNum(letter, parseAsUnicode) {
   
-  // Check if letter is a valid Latin alphabet letter
-  const regex = new RegExp('[a-zA-Z]');
-  if (regex.test(letter)) {
-    // Note: 97 = char code for the lowercase letter 'a'.
-    // Add 1 so that 'a' == 1
-    return letter.toLowerCase().charCodeAt(0) - 97 + 1;
+  // Unicode mode
+  if (parseAsUnicode) {
+    charcode = letter.charCodeAt(0);
+    
+    // Ignore space character
+    if (charcode != 32) {
+      return charcode;
+    }
+  }
+  
+  // Latin alphabet mode
+  else {
+    // Check if letter is a valid Latin alphabet letter
+    const regex = new RegExp('[a-zA-Z]');
+    if (regex.test(letter)) {
+      // Note: 97 = char code for the lowercase letter 'a'.
+      // Add 1 so that 'a' == 1
+      return letter.toLowerCase().charCodeAt(0) - 97 + 1;
+    }
   }
 
-  // Ignore punctuation and spaces
   return 0;
 }
 
@@ -232,12 +249,16 @@ function appendChars(theStr, paddingChar, numPaddingChars) {
  * Get the minimum amount of binary digits required to represent a message string
  * 
  * @param {string} input The string input to examine
+ * @param {boolean} parseAsUnicode 
+ *     True = parse this letter as a Unicode character.
+ *     False = parse a Latin alphabet letter into its corresponding number in the Latin alphabet
+ *     order (A, B, C etc)
  * @return {number} The minimum amount of binary digits required to represent the input string
  */
-function findMinBinDigits(input) {
+function findMinBinDigits(input, parseAsUnicode) {
   let min = 0;
   let inputArr = input.split("")
-      .map(letter => letterToNum(letter))
+      .map(letter => letterToNum(letter, parseAsUnicode))
       .map(num => numToBin(num));
 
   for (let i = 0; i < inputArr.length; i++) {
@@ -254,6 +275,10 @@ function findMinBinDigits(input) {
  * Convert the given input string into a binary string
  *
  * @param {string} input The string input to convert
+ * @param {boolean} parseAsUnicode 
+ *     True = parse this letter as a Unicode character.
+ *     False = parse a Latin alphabet letter into its corresponding number in the Latin alphabet
+ *     order (A, B, C etc)
  * @param {number} numChars The desired number of chars to be encoded in the string
  * @param {number} numDigits The desired number of binary digits
  * @param {number} charOffset Amount of chars to shift the ring by
@@ -263,8 +288,8 @@ function findMinBinDigits(input) {
  * @param {boolean} isPaddingSetToOne Should padding be encoded as a string of ones?
  * @return {string} The resulting binary number string
  */
-function convertToBinary(input, numChars, numDigits, charOffset, digitOffset, paddingChar, numPaddingChars, isPaddingSetToOne) {
-  // convertToBinary(input, 8, 7, 0, 0, "0", 3, true)
+function convertToBinary(input, parseAsUnicode, numChars, numDigits, charOffset, digitOffset, paddingChar, numPaddingChars, isPaddingSetToOne) {
+  // convertToBinary(input, false, 8, 7, 0, 0, "0", 3, true)
   
   if (input.length < numChars) {
     input = appendChars(input, " ", numChars);
@@ -272,7 +297,7 @@ function convertToBinary(input, numChars, numDigits, charOffset, digitOffset, pa
   
   // Transform the input to an array of binary strings, then process by each element 
   let inputArr = input.slice(0, numChars).split("")
-      .map(letter => letterToNum(letter))
+      .map(letter => letterToNum(letter, parseAsUnicode))
       .map(num => numToBin(num))
       .map(binStr => {
         if (isPaddingSetToOne && binStr == "0") {
@@ -316,8 +341,11 @@ function runUnitTests() {
   assertEquals("Shift the string 'yep' to the right by 3 (overflow)", applyOffset("yep", -3), "yep");
   assertEquals("Shift the string 'yep' to the right by 4 (overflow)", applyOffset("yep", -4), "pye");
   // Test letterToNum()
-  assertEquals("Ensure that 'A' is identified as the 1st letter of the alphabet", letterToNum("a"), 1);
-  assertEquals("Ensure that 'C' is identified as the 3rd letter of the alphabet", letterToNum("c"), 3);
+  assertEquals("Ensure that 'a' is identified as the 1st letter of the alphabet", letterToNum("a", false), 1);
+  assertEquals("Ensure that 'c' is identified as the 3rd letter of the alphabet", letterToNum("c", false), 3);
+  assertEquals("Ensure that 'c' is identified as having Unicode codepoint 99", letterToNum("c", true), 99);
+  assertEquals("Ensure that 'á' is identified as having Unicode codepoint 225", letterToNum("á", true), 225);
+  assertEquals("Ensure that '你' is identified as having Unicode codepoint 20320", letterToNum("你", true), 20320);
   // Test numToBin()
   assertEquals("Convert '1' to binary", numToBin(1), "1");
   assertEquals("Convert '3' to binary", numToBin(3), "11");
@@ -327,10 +355,14 @@ function runUnitTests() {
   // Test appendChars()
   assertEquals("Append '0' 3 times to '011'", appendChars("011", "0", 3), "011000");
   // Test findMinBinDigits()
-  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input 'mighty'", findMinBinDigits("mighty"), 5);
+  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input 'mighty'", findMinBinDigits("mighty", false), 5);
+  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input 'thếgiới'", findMinBinDigits("thếgiới", true), 13);
+  assertEquals("Find the minimum amount of binary digits required to represent each letter of the input '세계'", findMinBinDigits("세계", true), 16);
   // Test convertToBinary()
-  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", 1, 7, 0, 0, "0", 3, true), "0000011000");
-  assertEquals("Convert the input 'mighty' to binary format, including padding", convertToBinary("mighty", 8, 7, 0, 0, "0", 3, true), "00011010000001001000000011100000010000000010100000001100100011111111111111111000");
+  assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", false, 1, 7, 0, 0, "0", 3, true), "0000011000");
+  assertEquals("Convert the input 'mighty' to binary format, including padding", convertToBinary("mighty", false, 8, 7, 0, 0, "0", 3, true), "00011010000001001000000011100000010000000010100000001100100011111111111111111000");
+  assertEquals("Convert the input '세계' to binary format, including padding", convertToBinary("세계", true, 2, 16, 0, 0, "0", 4, true), "1100000100111000000010101100110001000000");
+
 }
 
 //////////////////////////////////////////////////
@@ -374,6 +406,14 @@ function getTabContentTemplate(ringNum) {
               <input type="text" class="form-control" id="ring${ringNum}-string" placeholder="" required>
               <div class="invalid-feedback">
                 Ring message is required.
+              </div>
+            </div>
+
+            <div class="col-12">
+              <input type="checkbox" class="form-check-input" id="ring${ringNum}-isunicode" placeholder="">
+              <label for="ring${ringNum}-isunicode" class="form-label" id="ring${ringNum}-isunicode-label">Is the string encoded in Unicode?</label>
+              <div class="invalid-feedback">
+                This is required.
               </div>
             </div>
 
@@ -424,6 +464,7 @@ function addRingFormEventListeners(ringNum) {
   // Get the user input fields
   let userFormElement = document.getElementById(`ring${ringNum}`);
   let userMessageElement = document.getElementById(`ring${ringNum}-string`);
+  let userIsUnicodeElement = document.getElementById(`ring${ringNum}-isunicode`);
   let userNumCharsElement = document.getElementById(`ring${ringNum}-num-of-msg-chars`);
   let userNumDigitsElement = document.getElementById(`ring${ringNum}-num-of-digits`);
   let userCharOffsetElement = document.getElementById(`ring${ringNum}-char-offset`);
@@ -443,6 +484,11 @@ function addRingFormEventListeners(ringNum) {
   });
   userMessageElement.addEventListener("keyup", function(event) {
     getRingMsgValue(event, this, msgRings[ringNum], userNumDigitsLabel, userNumDigitsElement);
+  }, true);
+  userIsUnicodeElement.addEventListener("input", function(event) {
+    let result = getChecked(event, this);
+    msgRings[ringNum].isUnicode = result;
+    initCanvas();
   }, true);
   userNumCharsElement.addEventListener("input", function(event) {
     msgRings[ringNum].numOfMsgChars = getInput(event, this);
@@ -523,6 +569,7 @@ function addMainFormEventListeners() {
   userNumOfRingsElement.addEventListener("input", function(event) {
     numOfMsgRings = parseInt(getInput(event, this));
 
+    // Reset message ring list and add empty instances
     msgRings = [];
     for (let i = 0; i < numOfMsgRings; i++) {
       msgRings.push(MessageRing.createEmptyInstance());
@@ -632,7 +679,7 @@ function drawCanvas() {
  * @param {HTMLElement} numDigitsElement HTML input for num of digits
  */
 function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
-  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage);
+  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage, false);
 
   // Update the label string
   numDigitsLabel.textContent = "Number of binary digits per char (minimum " + msgRing.minNumOfDigits + ")";
@@ -677,6 +724,18 @@ function getInput(e, context) {
   console.log(context.min);
   console.log(context.max);
   return context.value;
+}
+
+/**
+ * Get the checkbox value from the input field
+ * 
+ * @param {Event} e Event data
+ * @param {HTMLElement} context Target element
+ * @return {boolean} The status of the checkbox from the given context
+ */
+function getChecked(e, context) {
+  console.log(context.checked);
+  return context.checked;
 }
 
 /**
