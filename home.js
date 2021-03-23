@@ -34,7 +34,8 @@ class MessageRing {
   }
 
   /**
-   * Create an 'empty' MessageRing instance.
+   * Create an 'empty' MessageRing instance with 8 characters, 7 binary digits for each char,
+   * a padding length of 3 and no offsets.
    * 
    * @return A new MessageRing instance
    */
@@ -48,7 +49,8 @@ class MessageRing {
    * @return The binary string representation of this MessageRing
    */
   getBinaryMessage() {
-    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.charOffset, this.digitOffset, "0", this.paddingLen, true);
+    return convertToBinary(this.ringMessage, this.numOfMsgChars, this.numOfDigits, this.charOffset, 
+                           this.digitOffset, "0", this.paddingLen, true);
   }
 }
 
@@ -68,7 +70,8 @@ let isSpreadAcrossRings = false;
 // PATTERN GENERATOR CONSTANTS
 //////////////////////////////////////////////////
 
-// Default MessageRing instances representing the first 3 rings of the Perseverance rover parachute pattern
+// Default MessageRing instances representing the first 3 rings of the Perseverance rover
+// parachute pattern
 const perseveranceParachuteMsgRings = [
   new MessageRing("dare", 8, 7, 3, 0, 0),
   new MessageRing("mighty", 8, 7, 3, 4, 0),
@@ -149,7 +152,8 @@ function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
   for (let i = 0; i < numOfArcs; i += 1) {
     // If char is 1, draw an arc
     if (binaryMsg[i] == 1) {
-      drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), patternColour);
+      drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, 
+          (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), patternColour);
     }
   }
 }
