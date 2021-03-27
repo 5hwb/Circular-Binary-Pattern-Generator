@@ -713,7 +713,7 @@ function drawCanvas() {
  * @param {HTMLElement} numDigitsElement HTML input for num of digits
  */
 function updateMinNumOfDigits(msgRing, numDigitsLabel, numDigitsElement) {
-  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage, false);
+  msgRing.minNumOfDigits = findMinBinDigits(msgRing.ringMessage, msgRing.isUnicode);
 
   // Update the label string
   numDigitsLabel.textContent = "Number of binary digits per char (minimum " + msgRing.minNumOfDigits + ")";
