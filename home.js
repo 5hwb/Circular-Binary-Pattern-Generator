@@ -95,7 +95,6 @@ let numOfMsgRings = 3;
 let msgRings = perseveranceParachuteMsgRings;
 
 // Overlap parameters (to minimise artifacts)
-let arcOverlap = 0.3;
 let ringOverlap = 0.7;
 
 // Pattern radius percentages
@@ -144,25 +143,61 @@ function drawArc(ctx, centreX, centreY, innerRadius, outerRadius, angleStart, an
  * @param {number} innerRadius Inner radius of ring
  * @param {number} outerRadius Outer radius of ring
  * @param {string} binaryMsg Binary message to encode in the ring
- * @param {number} overlapDegrees Amount by which arcs should overlap
  */
 function drawBinaryRing(ctx, centreX, centreY, innerRadius, outerRadius,
-                        binaryMsg, overlapDegrees) {
-  let numOfArcs = binaryMsg.length;
-  let arcSize = 360 / numOfArcs;
-
-  for (let i = 0; i < numOfArcs; i += 1) {
-    // If char is 1, draw an arc
-    if (binaryMsg[i] == 1) {
-      drawArc(ctx, centreX, centreY, innerRadius, outerRadius, (Math.PI/180)*arcSize*i, 
-          (Math.PI/180)*(arcSize*(i+1)+overlapDegrees), patternColour);
-    }
-  }
+                        binaryMsg) {
+  // Convert the binary message into a list of angles to render the arcs with 
+  let arcAngles = binMsgToArcAngles(binaryMsg);
+  for (let i = 0; i < arcAngles.length; i += 1) {
+    drawArc(ctx, centreX, centreY, innerRadius, outerRadius, arcAngles[i][0], arcAngles[i][1], patternColour);
+  }  
 }
 
 //////////////////////////////////////////////////
 // UTILITY FUNCTIONS
 //////////////////////////////////////////////////
+
+/**
+ * Convert a binary message into a list of pairs of angles, with each angle 
+ * representing the starting and ending angle of the arcs needed to render the 
+ * message, where each arc represents a contiguous substring of 1's in the message.
+ * This makes the resulting pattern look more seamless, compared with the 
+ * previous method of rendering an individual arc for each char in the message.
+ * @param {string} binaryMsg Binary message to encode in the ring
+ * @return {number[][2]} Array of pairs of angles representing the starting and ending angle of the arcs
+ */
+function binMsgToArcAngles(binaryMsg) {
+  let numOfArcs = binaryMsg.length;
+  let arcSize = 360 / numOfArcs;
+
+  // List of arc angle pairs
+  let arcAngles = [];
+
+  let startingAngle = 0.0;
+  let isAOne = false; // Boolean flag to identify contiguous substring of 1's
+
+  // Look beyond the last chars of the message to ensure continuity with the first chars
+  for (let i = 0; i < numOfArcs + 1; i += 1) {
+    let x = i % numOfArcs;
+
+    // Record the starting angle of the arc at the start of a contiguous substring 
+    // of 1's
+    if (binaryMsg[x] == 1 && !isAOne) {
+      startingAngle = (Math.PI/180)*arcSize*i;
+      isAOne = true;
+    }
+    // Record the ending angle of the arc and add to the list once the end of the 
+    // contiguous substring of 1's is reached 
+    else if ((binaryMsg[x] == 0 || x == 0) && isAOne) {
+      let endingAngle = (Math.PI/180)*arcSize*i;
+      arcAngles.push([startingAngle, endingAngle]);
+      startingAngle = 0.0;
+      isAOne = false;
+    }
+  }
+
+  return arcAngles;
+}
 
 /**
  * Shift the given string or array left by the given offset.
@@ -362,7 +397,6 @@ function runUnitTests() {
   assertEquals("Convert the input 'c' to binary format, including padding", convertToBinary("c", false, 1, 7, 0, 0, "0", 3, true), "0000011000");
   assertEquals("Convert the input 'mighty' to binary format, including padding", convertToBinary("mighty", false, 8, 7, 0, 0, "0", 3, true), "00011010000001001000000011100000010000000010100000001100100011111111111111111000");
   assertEquals("Convert the input '세계' to binary format, including padding", convertToBinary("세계", true, 2, 16, 0, 0, "0", 4, true), "1100000100111000000010101100110001000000");
-
 }
 
 //////////////////////////////////////////////////
@@ -656,9 +690,9 @@ function drawCanvas() {
       drawBinaryRing(ctx, patternRadius, patternRadius, 
           innerPatternRadius + (patternWidth*i / numOfMsgRings), 
           innerPatternRadius + (patternWidth*(i+1) / numOfMsgRings) + actualRingOverlap, 
-          binaryMsg, arcOverlap);
+          binaryMsg);
     });
-    
+  
     // Render the base
     ctx.beginPath();
     ctx.arc(sizeX / 2, sizeY / 2, patternRadius, 0, Math.PI * 2, false);
